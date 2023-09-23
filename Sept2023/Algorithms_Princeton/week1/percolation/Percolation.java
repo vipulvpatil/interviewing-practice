@@ -2,7 +2,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
-  private int[][] grid;
+  private boolean[][] grid;
   private int openSiteCount;
 
   private WeightedQuickUnionUF set;
@@ -17,10 +17,10 @@ public class Percolation {
     if (n <= 0) {
       throw new IllegalArgumentException();
     }
-    this.grid = new int[n][n];
+    this.grid = new boolean[n][n];
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        this.grid[i][j] = 0;
+        this.grid[i][j] = false;
       }
     }
     this.openSiteCount = 0;
@@ -36,9 +36,12 @@ public class Percolation {
     if (row < 1 || col < 1 || row > totalRows || col > totalCols) {
       throw new IllegalArgumentException();
     }
+    if (this.isOpen(row, col)) {
+      return;
+    }
     int zeroIndexedRow = row - 1;
     int zeroIndexedCol = col - 1;
-    this.grid[zeroIndexedRow][zeroIndexedCol] = 1;
+    this.grid[zeroIndexedRow][zeroIndexedCol] = true;
     this.openSiteCount = this.openSiteCount + 1;
     int currentIndexInUnion = indexInUnion(zeroIndexedRow, zeroIndexedCol);
     if (zeroIndexedRow == 0) {
@@ -70,12 +73,18 @@ public class Percolation {
     }
     int zeroIndexedRow = row - 1;
     int zeroIndexedCol = col - 1;
-    return this.grid[zeroIndexedRow][zeroIndexedCol] == 1;
+    return this.grid[zeroIndexedRow][zeroIndexedCol];
   }
 
   // is the site (row, col) full?
   public boolean isFull(int row, int col) {
-    return !this.isOpen(row, col);
+    if (row < 1 || col < 1 || row > totalRows || col > totalCols) {
+      throw new IllegalArgumentException();
+    }
+    int zeroIndexedRow = row - 1;
+    int zeroIndexedCol = col - 1;
+    int unionIndex = indexInUnion(zeroIndexedRow, zeroIndexedCol);
+    return this.set.find(unionIndex) == this.set.find(virtualTopIndex);
   }
 
   // returns the number of open sites

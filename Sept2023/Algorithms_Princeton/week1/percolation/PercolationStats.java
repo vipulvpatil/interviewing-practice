@@ -1,23 +1,13 @@
-import java.util.ArrayList;
-
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
+  private static final double CONFIDENCE_95 = 1.96;
   private double[] results;
   private int trialCount;
-
-  class Site {
-    public int row;
-    public int col;
-
-    public Site(int row, int col) {
-      this.row = row + 1;
-      this.col = col + 1;
-    }
-  }
 
   // perform independent trials on an n-by-n grid
   public PercolationStats(int n, int trials) {
@@ -28,17 +18,14 @@ public class PercolationStats {
     results = new double[trials];
     for (int t = 0; t < trials; t++) {
       Percolation perc = new Percolation(n);
-      ArrayList<Site> fullsites = new ArrayList<Site>(n * n);
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          fullsites.add(new Site(i, j));
-        }
-      }
+      int[] randomSiteList = StdRandom.permutation(n * n);
+      int index = 0;
       while (!perc.percolates()) {
-        int randomlySelectedIndex = StdRandom.uniformInt(0, fullsites.size());
-        Site randomlySelected = fullsites.get(randomlySelectedIndex);
-        fullsites.remove(randomlySelectedIndex);
-        perc.open(randomlySelected.row, randomlySelected.col);
+        int siteIndex = randomSiteList[index];
+        int siteRow = siteIndex / n;
+        int siteCol = siteIndex % n;
+        perc.open(siteRow + 1, siteCol + 1);
+        index++;
       }
       results[t] = ((double) perc.numberOfOpenSites()) / (n * n);
     }
@@ -46,36 +33,29 @@ public class PercolationStats {
 
   // sample mean of percolation threshold
   public double mean() {
-    double sum = 0;
-    for (int t = 0; t < trialCount; t++) {
-      sum = sum + results[t];
-    }
-    return sum / trialCount;
+    return StdStats.mean(results);
   }
 
   // sample standard deviation of percolation threshold
   public double stddev() {
-    double calculatedMean = this.mean();
-    double sum = 0;
-    for (int t = 0; t < trialCount; t++) {
-      sum = sum + Math.pow((results[t] - calculatedMean), 2);
-    }
-    return Math.sqrt(sum / (trialCount - 1));
+    return StdStats.stddev(results);
   }
 
   // low endpoint of 95% confidence interval
   public double confidenceLo() {
-    return this.mean() - (1.96 * this.stddev() / Math.sqrt(trialCount));
+    return this.mean() - (CONFIDENCE_95 * this.stddev() / Math.sqrt(trialCount));
   }
 
   // high endpoint of 95% confidence interval
   public double confidenceHi() {
-    return this.mean() + (1.96 * this.stddev() / Math.sqrt(trialCount));
+    return this.mean() + (CONFIDENCE_95 * this.stddev() / Math.sqrt(trialCount));
   }
 
   // test client (see below)
   public static void main(String[] args) {
-    PercolationStats percStats = new PercolationStats(StdIn.readInt(), StdIn.readInt());
+    int n = Integer.parseInt(StdIn.readString());
+    int trials = Integer.parseInt(StdIn.readString());
+    PercolationStats percStats = new PercolationStats(n, trials);
     StdOut.printf("mean                    = %f\n", percStats.mean());
     StdOut.printf("stddev                  = %f\n", percStats.stddev());
     StdOut.printf("95%% confidence interval = [%f, %f]\n", percStats.confidenceLo(), percStats.confidenceHi());
