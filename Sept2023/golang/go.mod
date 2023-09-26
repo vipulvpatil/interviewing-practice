@@ -1,4 +1,4 @@
-module github.com/vipulvpatil/interviewing-practice/Sept2023/golang/stack
+module github.com/vipulvpatil/interviewing-practice/Sept2023/golang
 
 go 1.19
 
