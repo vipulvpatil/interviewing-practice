@@ -1,0 +1,3 @@
+#!/bin/sh
+
+zip queues.zip Deque.java RandomizedQueue.java Permutation.java
