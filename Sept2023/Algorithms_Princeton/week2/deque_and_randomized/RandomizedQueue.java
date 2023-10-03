@@ -42,9 +42,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     int randomIndex = StdRandom.uniformInt(length);
     Item item = this.items[randomIndex];
-    for (int i = randomIndex; i < this.length - 1; i++) {
-      this.items[i] = this.items[i + 1];
-    }
+    this.items[randomIndex] = this.items[length - 1];
     this.items[--this.length] = null;
     if (this.capacity >= this.length * 4) {
       resize(this.capacity / 2);
@@ -63,21 +61,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
   // return an independent iterator over items in random order
   public Iterator<Item> iterator() {
-    return new MyIterator(this.items, this.length);
+    return new MyIterator(this.length);
   }
 
   private class MyIterator implements Iterator<Item> {
-    RandomizedQueue<Item> copy;
+    int[] order;
+    int index;
 
-    public MyIterator(Item[] items, int length) {
-      this.copy = new RandomizedQueue<Item>();
-      for (int i = 0; i < length; i++) {
-        this.copy.enqueue(items[i]);
-      }
+    public MyIterator(int length) {
+      this.index = 0;
+      this.order = StdRandom.permutation(length);
     }
 
     public boolean hasNext() {
-      return !this.copy.isEmpty();
+      return this.index < this.order.length;
     }
 
     public void remove() {
@@ -86,7 +83,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     public Item next() {
       if (hasNext()) {
-        return this.copy.dequeue();
+        return items[order[index++]];
       }
       throw new java.util.NoSuchElementException();
     }
@@ -105,6 +102,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     while (iter.hasNext()) {
       System.out.println(iter.next());
     }
+    System.out.println("---");
 
     System.out.println(list.dequeue());
     System.out.println(list.dequeue());
