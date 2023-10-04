@@ -32,8 +32,12 @@ func GetConvexHull(points []point.Point) []point.Point {
 	return hullPoints
 }
 
+func turn(a, b, c point.Point) float64 {
+	return a.GetX()*(b.GetY()-c.GetY()) + b.GetX()*(c.GetY()-a.GetY()) + c.GetX()*(a.GetY()-b.GetY())
+}
+
 func isCCWTurn(a, b, c point.Point) bool {
-	return a.GetX()*(b.GetY()-c.GetY())+b.GetX()*(c.GetY()-a.GetY())+c.GetX()*(a.GetY()-b.GetY()) > 0
+	return turn(a, b, c) > 0
 }
 
 func sortByY(points []point.Point) {
@@ -56,16 +60,8 @@ func sortByY(points []point.Point) {
 
 func sortByAngleFromGivenPoint(points []point.Point, givenPoint point.Point) {
 	slices.SortFunc[[]point.Point](points, func(a point.Point, b point.Point) int {
-		slopeA := math.Inf(1)
-		slopeB := math.Inf(1)
-		if a.GetX() != givenPoint.GetX() {
-			slopeA = (a.GetY() - givenPoint.GetY()) / (a.GetX() - givenPoint.GetX())
-		}
-		if b.GetX() != givenPoint.GetX() {
-			slopeB = (b.GetY() - givenPoint.GetY()) / (b.GetX() - givenPoint.GetX())
-		}
-
-		if slopeA == slopeB {
+		turnDirection := turn(givenPoint, a, b)
+		if turnDirection == 0 {
 			distASqr := math.Pow(a.GetX()-givenPoint.GetX(), 2) + math.Pow(a.GetY()-givenPoint.GetY(), 2)
 			distBSqr := math.Pow(b.GetX()-givenPoint.GetX(), 2) + math.Pow(b.GetY()-givenPoint.GetY(), 2)
 			if distASqr < distBSqr {
@@ -76,30 +72,10 @@ func sortByAngleFromGivenPoint(points []point.Point, givenPoint point.Point) {
 			return 0
 		}
 
-		if math.IsInf(slopeA, 1) {
-			if slopeB > 0 {
-				return 1
-			}
+		if turnDirection > 0 {
 			return -1
 		}
 
-		if slopeA > 0 && slopeB > 0 {
-			if slopeA > slopeB {
-				return 1
-			}
-			return -1
-		}
-
-		if slopeA < 0 && slopeB < 0 {
-			if slopeA > slopeB {
-				return 1
-			}
-			return -1
-		}
-
-		if slopeA > 0 && slopeB < 0 {
-			return -1
-		}
 		return 1
 	})
 }
