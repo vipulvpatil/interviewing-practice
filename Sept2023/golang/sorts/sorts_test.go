@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/insertion"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/selection"
+	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/shell"
 	sortableelements "github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/sortable_elements"
 )
 
@@ -23,6 +24,15 @@ func Test_InsertionSort(t *testing.T) {
 	t.Run("Insertion sort works", func(t *testing.T) {
 		arr := sortableelements.NewSortableInts(8, 4, 2, 6, 3, 7, 1, 9, 5)
 		insertion.NewSorter().Sort(arr)
+		output := fmt.Sprint(arr)
+		assert.Equal(t, "1, 2, 3, 4, 5, 6, 7, 8, 9", output)
+	})
+}
+
+func Test_ShellSort(t *testing.T) {
+	t.Run("Shell sort works", func(t *testing.T) {
+		arr := sortableelements.NewSortableInts(8, 4, 2, 6, 3, 7, 1, 9, 5)
+		shell.NewSorter().Sort(arr)
 		output := fmt.Sprint(arr)
 		assert.Equal(t, "1, 2, 3, 4, 5, 6, 7, 8, 9", output)
 	})
