@@ -7,7 +7,7 @@ import (
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/convex_hull/point"
 )
 
-func PlotPoints(points []point.Point) {
+func PlotPoints(points, connectedPoints []point.Point) {
 	width := 1000
 	height := 1000
 
@@ -20,7 +20,20 @@ func PlotPoints(points []point.Point) {
 	for _, point := range points {
 		graph.DrawPoint(point.GetX(), point.GetY(), 5)
 	}
+
 	graph.SetRGB(1, 0, 0)
 	graph.Fill()
+	for i, point := range connectedPoints {
+		if i == 0 {
+			graph.MoveTo(point.GetX(), point.GetY())
+		} else if i < len(connectedPoints)-1 {
+			graph.LineTo(point.GetX(), point.GetY())
+		} else {
+			graph.LineTo(point.GetX(), point.GetY())
+			graph.LineTo(connectedPoints[0].GetX(), connectedPoints[0].GetY())
+		}
+	}
+	graph.SetRGB(0, 0, 1)
+	graph.Stroke()
 	graph.SavePNG("show.png")
 }
