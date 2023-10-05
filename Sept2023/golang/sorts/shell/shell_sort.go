@@ -4,7 +4,7 @@ import "github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/sorta
 
 type ShellSorter struct{}
 
-func (s ShellSorter) Sort(arr sortable.Sortable) {
+func (s *ShellSorter) Sort(arr sortable.SortableInPlace) {
 	n := arr.Len()
 	h := 1
 	for h < n/3 {
@@ -15,7 +15,7 @@ func (s ShellSorter) Sort(arr sortable.Sortable) {
 	}
 }
 
-func (s ShellSorter) HSort(arr sortable.Sortable, h int) {
+func (s *ShellSorter) HSort(arr sortable.SortableInPlace, h int) {
 	for i := h; i < arr.Len(); i++ {
 		for j := i; j >= h; j -= h {
 			if arr.Less(j, j-h) {
@@ -27,6 +27,6 @@ func (s ShellSorter) HSort(arr sortable.Sortable, h int) {
 	}
 }
 
-func NewSorter() sortable.Sorter {
-	return ShellSorter{}
+func NewSorter() sortable.InPlaceSorter {
+	return &ShellSorter{}
 }

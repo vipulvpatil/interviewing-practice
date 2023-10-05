@@ -5,31 +5,39 @@ import (
 )
 
 type SortableInts struct {
-	values []int
+	Values []int
 }
 
 func NewSortableInts(v ...int) *SortableInts {
-	return &SortableInts{values: v}
+	return &SortableInts{Values: v}
 }
 
 func (s *SortableInts) Swap(i, j int) {
-	temp := s.values[i]
-	s.values[i] = s.values[j]
-	s.values[j] = temp
+	temp := s.Values[i]
+	s.Values[i] = s.Values[j]
+	s.Values[j] = temp
 }
 func (s *SortableInts) Less(i, j int) bool {
-	return s.values[i] < s.values[j]
+	return s.Values[i] < s.Values[j]
 }
 
 func (s *SortableInts) Len() int {
-	return len(s.values)
+	return len(s.Values)
+}
+
+func (s *SortableInts) Get(i int) any {
+	return s.Values[i]
+}
+
+func (s *SortableInts) Set(i int, value any) {
+	s.Values[i] = value.(int)
 }
 
 func (s *SortableInts) String() string {
 	stringifiedValue := ""
-	for i, x := range s.values {
+	for i, x := range s.Values {
 		stringifiedValue = fmt.Sprintf("%s%d", stringifiedValue, x)
-		if i < len(s.values)-1 {
+		if i < len(s.Values)-1 {
 			stringifiedValue = fmt.Sprintf("%s%s", stringifiedValue, ", ")
 		}
 	}

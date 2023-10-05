@@ -1,16 +1,16 @@
-package insertion
+package merge
 
 import (
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/sortable"
 )
 
-type InsertionSorter struct{}
+type MergeSorter struct{}
 
-func (s *InsertionSorter) Sort(arr sortable.SortableInPlace) {
+func (s *MergeSorter) Sort(arr sortable.SortableOutOfPlace) {
 	for i := 1; i < arr.Len(); i++ {
 		for j := i; j > 0; j-- {
 			if arr.Less(j, j-1) {
-				arr.Swap(j, j-1)
+				// arr.Swap(j, j-1)
 			} else {
 				break
 			}
@@ -18,6 +18,8 @@ func (s *InsertionSorter) Sort(arr sortable.SortableInPlace) {
 	}
 }
 
-func NewSorter() sortable.InPlaceSorter {
-	return &InsertionSorter{}
+// func MergeSort(arr)
+
+func NewSorter() sortable.OutOfPlaceSorter {
+	return &MergeSorter{}
 }
