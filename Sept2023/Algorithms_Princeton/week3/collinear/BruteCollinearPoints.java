@@ -2,6 +2,7 @@ import java.util.Arrays;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
 
 public class BruteCollinearPoints {
   private LineSegment[] lineSegments;
@@ -23,15 +24,10 @@ public class BruteCollinearPoints {
       for (int j = i + 1; j < points.length; j++) {
         for (int k = j + 1; k < points.length; k++) {
           for (int l = k + 1; l < points.length; l++) {
-            // StdOut.printf("%d\t%d\t%d\t%d\n", i, j, k, l);
             Point pI = points[i];
             Point pJ = points[j];
             Point pK = points[k];
             Point pL = points[l];
-            // StdOut.printf("%s\t%s\t%s\t%s\n", pI.toString(), pJ.toString(),
-            // pK.toString(), pL.toString());
-            // StdOut.printf("%f\t%f\t%f\n", pI.slopeTo(pJ), pI.slopeTo(pK),
-            // pI.slopeTo(pL));
             if (pI.slopeTo(pJ) == pI.slopeTo(pK) &&
                 pI.slopeTo(pJ) == pI.slopeTo(pL)) {
               int n = this.numberOfSegments();

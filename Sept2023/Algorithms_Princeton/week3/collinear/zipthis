@@ -1,3 +1,3 @@
 #!/bin/sh
 
-zip queues.zip Deque.java RandomizedQueue.java Permutation.java
+zip collinear.zip BruteCollinearPoints.java FastCollinearPoints.java Point.java
