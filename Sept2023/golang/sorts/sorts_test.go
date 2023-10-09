@@ -7,6 +7,7 @@ import (
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/insertion"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/merge"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/quick"
+	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/quick3"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/selection"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/shell"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/sortable"
@@ -51,6 +52,12 @@ func Test_Sort(t *testing.T) {
 			input:          []int{8, 4, 2, 6, 3, 7, 1, 9, 5},
 			expectedOutput: []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
 			inPlaceSorter:  quick.NewSorter(),
+		},
+		{
+			name:           "3 way Quick sort",
+			input:          []int{8, 4, 2, 6, 3, 7, 1, 9, 5},
+			expectedOutput: []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			inPlaceSorter:  quick3.NewSorter(),
 		},
 	}
 
