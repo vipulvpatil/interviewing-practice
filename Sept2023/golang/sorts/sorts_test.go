@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/heap"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/insertion"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/merge"
 	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/sorts/quick"
@@ -58,6 +59,12 @@ func Test_Sort(t *testing.T) {
 			input:          []int{8, 4, 2, 6, 3, 7, 1, 9, 5},
 			expectedOutput: []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
 			inPlaceSorter:  quick3.NewSorter(),
+		},
+		{
+			name:           "Heap sort",
+			input:          []int{8, 4, 2, 6, 3, 7, 1, 9, 5},
+			expectedOutput: []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			inPlaceSorter:  heap.NewSorter(),
 		},
 	}
 
