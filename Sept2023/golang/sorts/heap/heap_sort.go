@@ -6,14 +6,6 @@ import (
 
 type HeapSorter struct{}
 
-/*
-0
-1                2
-3       4        5         6
-7   8   9   10   11   12   13   14
-
-*/
-
 func leftChild(n int) int {
 	return 2*n + 1
 }
@@ -60,8 +52,8 @@ func swim(arr sortable.SortableInPlace, i int) {
 }
 
 func (s *HeapSorter) Sort(arr sortable.SortableInPlace) {
-	for i := 1; i < arr.Len(); i++ {
-		swim(arr, i)
+	for i := parent(arr.Len() - 1); i >= 0; i-- {
+		sink(arr, i, arr.Len())
 	}
 
 	for size := arr.Len() - 1; size > 0; size-- {
