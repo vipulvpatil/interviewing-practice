@@ -56,8 +56,8 @@ func Test_Sort(t *testing.T) {
 		},
 		{
 			name:           "3 way Quick sort",
-			input:          []int{8, 4, 2, 6, 3, 7, 1, 9, 5},
-			expectedOutput: []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			input:          []int{8, 3, 2, 5, 3, 5, 3, 9, 5},
+			expectedOutput: []int{2, 3, 3, 3, 5, 5, 5, 8, 9},
 			inPlaceSorter:  quick3.NewSorter(),
 		},
 		{
