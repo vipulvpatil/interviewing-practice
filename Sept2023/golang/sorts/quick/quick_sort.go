@@ -16,19 +16,24 @@ func QuickSort(arr sortable.SortableInPlace, start, end int) {
 	}
 	pivot := start
 	i := start + 1
-	j := start + 1
-	for j <= end {
-		if arr.Less(j, pivot) {
-			if i != j {
-				arr.Swap(i, j)
-			}
+	j := end
+	for {
+		for i <= end && arr.Less(i, pivot) {
 			i++
 		}
-		j++
+		for j >= start+1 && arr.Less(pivot, j) {
+			j--
+		}
+
+		if i < j {
+			arr.Swap(i, j)
+		} else {
+			break
+		}
 	}
-	arr.Swap(pivot, i-1)
-	QuickSort(arr, start, i-2)
-	QuickSort(arr, i, end)
+	arr.Swap(pivot, j)
+	QuickSort(arr, start, j-1)
+	QuickSort(arr, j+1, end)
 }
 
 func NewSorter() sortable.InPlaceSorter {
