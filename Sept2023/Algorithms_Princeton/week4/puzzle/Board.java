@@ -1,11 +1,8 @@
 import java.util.Iterator;
-
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 
 public class Board {
-
   private int[][] currentTiles;
 
   // create a board from an n-by-n array of tiles,
@@ -34,11 +31,10 @@ public class Board {
 
   // number of tiles out of place
   public int hamming() {
-    int dim = this.dimension();
     int outOfPlaceCount = 0;
     for (int row = 0; row < this.currentTiles.length; row++) {
       for (int col = 0; col < this.currentTiles[row].length; col++) {
-        if (this.currentTiles[row][col] != row * dim + col) {
+        if (this.currentTiles[row][col] != goal(row, col)) {
           outOfPlaceCount++;
         }
       }
@@ -53,7 +49,7 @@ public class Board {
     int noOfMoves = 0;
     for (int row = 0; row < this.currentTiles.length; row++) {
       for (int col = 0; col < this.currentTiles[row].length; col++) {
-        if (this.currentTiles[row][col] != row * dim + col) {
+        if (this.currentTiles[row][col] != goal(row, col)) {
           int targetRow = this.currentTiles[row][col] / dim;
           int targetCol = this.currentTiles[row][col] % dim;
           noOfMoves = noOfMoves + Math.abs(targetRow - row) + Math.abs(targetCol - col);
@@ -66,10 +62,9 @@ public class Board {
 
   // is this board the goal board?
   public boolean isGoal() {
-    int dim = this.dimension();
     for (int row = 0; row < this.currentTiles.length; row++) {
       for (int col = 0; col < this.currentTiles[row].length; col++) {
-        if (this.currentTiles[row][col] != row * dim + col) {
+        if (this.currentTiles[row][col] != goal(row, col)) {
           return false;
         }
       }
@@ -155,9 +150,7 @@ public class Board {
   // a board that is obtained by exchanging any pair of tiles
   public Board twin() {
     int dim = this.dimension();
-    int[] random = StdRandom.permutation(dim * dim, 2);
-    int random1 = random[0];
-    int random2 = random[1];
+
     int[][] newTiles = new int[dim][dim];
     for (int row = 0; row < this.currentTiles.length; row++) {
       for (int col = 0; col < this.currentTiles[row].length; col++) {
@@ -165,15 +158,28 @@ public class Board {
       }
     }
 
-    int targetRow1 = random1 / dim;
-    int targetCol1 = random1 % dim;
-    int targetRow2 = random2 / dim;
-    int targetCol2 = random2 % dim;
+    int targetRow1 = 0 / dim;
+    int targetCol1 = 0 % dim;
+    int targetRow2 = (dim * dim - 1) / dim;
+    int targetCol2 = (dim * dim - 1) % dim;
+
+    if (newTiles[targetRow1][targetCol1] == 0) {
+      targetRow1++;
+    }
+    if (newTiles[targetRow2][targetCol2] == 0) {
+      targetRow2--;
+    }
+
     int temp = newTiles[targetRow1][targetCol1];
     newTiles[targetRow1][targetCol1] = newTiles[targetRow2][targetCol2];
     newTiles[targetRow2][targetCol2] = temp;
 
     return new Board(newTiles);
+  }
+
+  private int goal(int row, int col) {
+    int dim = dimension();
+    return (row * dim + col + 1) % (dim * dim);
   }
 
   // unit testing (not graded)
