@@ -1,9 +1,11 @@
+import java.util.Iterator;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 public class Board {
 
-  private Iterable<Board> b;
   private int[][] currentTiles;
 
   // create a board from an n-by-n array of tiles,
@@ -64,22 +66,114 @@ public class Board {
 
   // is this board the goal board?
   public boolean isGoal() {
-    return false;
+    int dim = this.dimension();
+    for (int row = 0; row < this.currentTiles.length; row++) {
+      for (int col = 0; col < this.currentTiles[row].length; col++) {
+        if (this.currentTiles[row][col] != row * dim + col) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 
   // does this board equal y?
-  public boolean equals(Object y) {
-    return false;
+  public boolean equals(Board board) {
+    return this.toString().equals(board.toString());
   }
 
   // all neighboring boards
   public Iterable<Board> neighbors() {
-    return this.b;
+    BoardIterable iter = new BoardIterable();
+    int dim = this.dimension();
+    int row0 = 0;
+    int col0 = 0;
+    for (int row = 0; row < this.currentTiles.length; row++) {
+      for (int col = 0; col < this.currentTiles[row].length; col++) {
+        if (this.currentTiles[row][col] == 0) {
+          row0 = row;
+          col0 = col;
+        }
+      }
+    }
+    if (col0 > 0) {
+      int[][] moveTiles = new int[dim][dim];
+      int movingCell = this.currentTiles[row0][col0 - 1];
+      for (int row = 0; row < this.currentTiles.length; row++) {
+        for (int col = 0; col < this.currentTiles[row].length; col++) {
+          moveTiles[row][col] = this.currentTiles[row][col];
+        }
+      }
+      moveTiles[row0][col0] = movingCell;
+      moveTiles[row0][col0 - 1] = 0;
+
+      iter.add(new Board(moveTiles));
+    }
+    if (col0 < dim - 1) {
+      int[][] moveTiles = new int[dim][dim];
+      int movingCell = this.currentTiles[row0][col0 + 1];
+      for (int row = 0; row < this.currentTiles.length; row++) {
+        for (int col = 0; col < this.currentTiles[row].length; col++) {
+          moveTiles[row][col] = this.currentTiles[row][col];
+        }
+      }
+      moveTiles[row0][col0] = movingCell;
+      moveTiles[row0][col0 + 1] = 0;
+
+      iter.add(new Board(moveTiles));
+    }
+    if (row0 > 0) {
+      int[][] moveTiles = new int[dim][dim];
+      int movingCell = this.currentTiles[row0 - 1][col0];
+      for (int row = 0; row < this.currentTiles.length; row++) {
+        for (int col = 0; col < this.currentTiles[row].length; col++) {
+          moveTiles[row][col] = this.currentTiles[row][col];
+        }
+      }
+      moveTiles[row0][col0] = movingCell;
+      moveTiles[row0 - 1][col0] = 0;
+
+      iter.add(new Board(moveTiles));
+    }
+    if (row0 < dim - 1) {
+      int[][] moveTiles = new int[dim][dim];
+      int movingCell = this.currentTiles[row0 + 1][col0];
+      for (int row = 0; row < this.currentTiles.length; row++) {
+        for (int col = 0; col < this.currentTiles[row].length; col++) {
+          moveTiles[row][col] = this.currentTiles[row][col];
+        }
+      }
+      moveTiles[row0][col0] = movingCell;
+      moveTiles[row0 + 1][col0] = 0;
+
+      iter.add(new Board(moveTiles));
+    }
+    return iter;
   }
 
   // a board that is obtained by exchanging any pair of tiles
   public Board twin() {
-    return this;
+    int dim = this.dimension();
+    int[] random = StdRandom.permutation(dim * dim, 2);
+    int random1 = random[0];
+    int random2 = random[1];
+    int[][] newTiles = new int[dim][dim];
+    for (int row = 0; row < this.currentTiles.length; row++) {
+      for (int col = 0; col < this.currentTiles[row].length; col++) {
+        newTiles[row][col] = this.currentTiles[row][col];
+      }
+    }
+
+    int targetRow1 = random1 / dim;
+    int targetCol1 = random1 % dim;
+    int targetRow2 = random2 / dim;
+    int targetCol2 = random2 % dim;
+    int temp = newTiles[targetRow1][targetCol1];
+    newTiles[targetRow1][targetCol1] = newTiles[targetRow2][targetCol2];
+    newTiles[targetRow2][targetCol2] = temp;
+
+    return new Board(newTiles);
   }
 
   // unit testing (not graded)
@@ -109,6 +203,69 @@ public class Board {
 
     StdOut.println(initial.hamming());
     StdOut.println(initial.manhattan());
+
+    StdOut.println("neighbors");
+    for (Board board : initial.neighbors())
+      StdOut.println(board);
+
+    StdOut.println("twins");
+    StdOut.println(initial.twin());
+    StdOut.println(initial.twin());
+    StdOut.println(initial.twin());
+  }
+
+  private class BoardNode {
+    public Board board;
+    public BoardNode next;
+
+    public BoardNode(Board b) {
+      this.board = b;
+    }
+  }
+
+  private class BoardIterable implements Iterable<Board> {
+    BoardIterator iter;
+
+    public BoardIterable() {
+      iter = new BoardIterator();
+    }
+
+    public void add(Board b) {
+      iter.add(b);
+    }
+
+    public Iterator<Board> iterator() {
+      return iter;
+    }
+  }
+
+  private class BoardIterator implements Iterator<Board> {
+    BoardNode current;
+    BoardNode tail;
+
+    public void add(Board b) {
+      BoardNode node = new BoardNode(b);
+      if (current == null) {
+        current = node;
+      }
+      if (tail != null) {
+        tail.next = node;
+      }
+      tail = node;
+    }
+
+    public boolean hasNext() {
+      return current != null;
+    }
+
+    public Board next() {
+      if (!hasNext()) {
+        throw new java.util.NoSuchElementException();
+      }
+      Board board = current.board;
+      current = current.next;
+      return board;
+    }
   }
 
 }
