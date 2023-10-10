@@ -14,8 +14,7 @@ public class Board {
 
   // string representation of this board
   public String toString() {
-    int n = this.currentTiles.length;
-    String outputString = String.format("%d\n", n);
+    String outputString = String.format("%d\n", this.dimension());
     for (int row = 0; row < this.currentTiles.length; row++) {
       for (int col = 0; col < this.currentTiles[row].length; col++) {
         outputString = outputString.concat(String.format(" %d", this.currentTiles[row][col]));
@@ -28,17 +27,39 @@ public class Board {
 
   // board dimension n
   public int dimension() {
-    return 0;
+    return this.currentTiles.length;
   }
 
   // number of tiles out of place
   public int hamming() {
-    return 0;
+    int dim = this.dimension();
+    int outOfPlaceCount = 0;
+    for (int row = 0; row < this.currentTiles.length; row++) {
+      for (int col = 0; col < this.currentTiles[row].length; col++) {
+        if (this.currentTiles[row][col] != row * dim + col) {
+          outOfPlaceCount++;
+        }
+      }
+    }
+
+    return outOfPlaceCount;
   }
 
   // sum of Manhattan distances between tiles and goal
   public int manhattan() {
-    return 0;
+    int dim = this.dimension();
+    int noOfMoves = 0;
+    for (int row = 0; row < this.currentTiles.length; row++) {
+      for (int col = 0; col < this.currentTiles[row].length; col++) {
+        if (this.currentTiles[row][col] != row * dim + col) {
+          int targetRow = this.currentTiles[row][col] / dim;
+          int targetCol = this.currentTiles[row][col] % dim;
+          noOfMoves = noOfMoves + Math.abs(targetRow - row) + Math.abs(targetCol - col);
+        }
+      }
+    }
+
+    return noOfMoves;
   }
 
   // is this board the goal board?
@@ -85,6 +106,9 @@ public class Board {
     // }
 
     StdOut.println(initial);
+
+    StdOut.println(initial.hamming());
+    StdOut.println(initial.manhattan());
   }
 
 }
