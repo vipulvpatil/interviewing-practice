@@ -1,5 +1,6 @@
-import java.util.Iterator;
+import java.util.Arrays;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Board {
@@ -8,7 +9,7 @@ public class Board {
   // create a board from an n-by-n array of tiles,
   // where tiles[row][col] = tile at (row, col)
   public Board(int[][] tiles) {
-    this.currentTiles = tiles;
+    this.currentTiles = tiles.clone();
   }
 
   // string representation of this board
@@ -34,7 +35,7 @@ public class Board {
     int outOfPlaceCount = 0;
     for (int row = 0; row < this.currentTiles.length; row++) {
       for (int col = 0; col < this.currentTiles[row].length; col++) {
-        if (this.currentTiles[row][col] != goal(row, col)) {
+        if (this.currentTiles[row][col] != 0 && this.currentTiles[row][col] != goal(row, col)) {
           outOfPlaceCount++;
         }
       }
@@ -49,10 +50,13 @@ public class Board {
     int noOfMoves = 0;
     for (int row = 0; row < this.currentTiles.length; row++) {
       for (int col = 0; col < this.currentTiles[row].length; col++) {
-        if (this.currentTiles[row][col] != goal(row, col)) {
-          int targetRow = this.currentTiles[row][col] / dim;
-          int targetCol = this.currentTiles[row][col] % dim;
-          noOfMoves = noOfMoves + Math.abs(targetRow - row) + Math.abs(targetCol - col);
+        int g = goal(row, col);
+        if (this.currentTiles[row][col] != g) {
+          if (this.currentTiles[row][col] != 0) {
+            int targetRow = (this.currentTiles[row][col] - 1) / dim;
+            int targetCol = (this.currentTiles[row][col] - 1) % dim;
+            noOfMoves = noOfMoves + Math.abs(targetRow - row) + Math.abs(targetCol - col);
+          }
         }
       }
     }
@@ -74,13 +78,26 @@ public class Board {
   }
 
   // does this board equal y?
-  public boolean equals(Board board) {
-    return this.toString().equals(board.toString());
+  public boolean equals(Object y) {
+    if (y == null) {
+      return false;
+    }
+    if (y.getClass() != this.getClass()) {
+      return false;
+    }
+
+    Board board = (Board) y;
+    if (this.dimension() != board.dimension()) {
+      return false;
+    }
+    return Arrays.deepEquals(this.currentTiles, board.currentTiles);
   }
 
   // all neighboring boards
   public Iterable<Board> neighbors() {
-    BoardIterable iter = new BoardIterable();
+    Queue<Board> queue = new Queue<Board>();
+
+    // BoardIterable iter = new BoardIterable();
     int dim = this.dimension();
     int row0 = 0;
     int col0 = 0;
@@ -103,7 +120,7 @@ public class Board {
       moveTiles[row0][col0] = movingCell;
       moveTiles[row0][col0 - 1] = 0;
 
-      iter.add(new Board(moveTiles));
+      queue.enqueue(new Board(moveTiles));
     }
     if (col0 < dim - 1) {
       int[][] moveTiles = new int[dim][dim];
@@ -116,7 +133,7 @@ public class Board {
       moveTiles[row0][col0] = movingCell;
       moveTiles[row0][col0 + 1] = 0;
 
-      iter.add(new Board(moveTiles));
+      queue.enqueue(new Board(moveTiles));
     }
     if (row0 > 0) {
       int[][] moveTiles = new int[dim][dim];
@@ -129,7 +146,7 @@ public class Board {
       moveTiles[row0][col0] = movingCell;
       moveTiles[row0 - 1][col0] = 0;
 
-      iter.add(new Board(moveTiles));
+      queue.enqueue(new Board(moveTiles));
     }
     if (row0 < dim - 1) {
       int[][] moveTiles = new int[dim][dim];
@@ -142,9 +159,9 @@ public class Board {
       moveTiles[row0][col0] = movingCell;
       moveTiles[row0 + 1][col0] = 0;
 
-      iter.add(new Board(moveTiles));
+      queue.enqueue(new Board(moveTiles));
     }
-    return iter;
+    return queue;
   }
 
   // a board that is obtained by exchanging any pair of tiles
@@ -219,59 +236,4 @@ public class Board {
     StdOut.println(initial.twin());
     StdOut.println(initial.twin());
   }
-
-  private class BoardNode {
-    public Board board;
-    public BoardNode next;
-
-    public BoardNode(Board b) {
-      this.board = b;
-    }
-  }
-
-  private class BoardIterable implements Iterable<Board> {
-    BoardIterator iter;
-
-    public BoardIterable() {
-      iter = new BoardIterator();
-    }
-
-    public void add(Board b) {
-      iter.add(b);
-    }
-
-    public Iterator<Board> iterator() {
-      return iter;
-    }
-  }
-
-  private class BoardIterator implements Iterator<Board> {
-    BoardNode current;
-    BoardNode tail;
-
-    public void add(Board b) {
-      BoardNode node = new BoardNode(b);
-      if (current == null) {
-        current = node;
-      }
-      if (tail != null) {
-        tail.next = node;
-      }
-      tail = node;
-    }
-
-    public boolean hasNext() {
-      return current != null;
-    }
-
-    public Board next() {
-      if (!hasNext()) {
-        throw new java.util.NoSuchElementException();
-      }
-      Board board = current.board;
-      current = current.next;
-      return board;
-    }
-  }
-
 }

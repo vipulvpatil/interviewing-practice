@@ -1,7 +1,9 @@
 import java.util.Comparator;
-import java.util.Iterator;
+import java.util.HashMap;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
@@ -16,30 +18,6 @@ public class Solver {
 
   private GameTreeNode winningGameTreeNode;
 
-  private class HammingComparator implements Comparator<GameTreeNode> {
-    public int compare(GameTreeNode a, GameTreeNode b) {
-      if (a.board.hamming() < b.board.hamming()) {
-        return -1;
-      }
-      if (a.board.hamming() > b.board.hamming()) {
-        return 1;
-      }
-      return 0;
-    }
-  }
-
-  private class ManhattanComparator implements Comparator<GameTreeNode> {
-    public int compare(GameTreeNode a, GameTreeNode b) {
-      if (a.board.manhattan() < b.board.manhattan()) {
-        return -1;
-      }
-      if (a.board.manhattan() > b.board.manhattan()) {
-        return 1;
-      }
-      return 0;
-    }
-  }
-
   // find a solution to the initial board (using the A* algorithm)
   public Solver(Board initial) {
     if (initial == null) {
@@ -49,8 +27,8 @@ public class Solver {
     Board alt = initial.twin();
     OneStepSolver altSolution = new OneStepSolver(alt);
     while (true) {
-      winningGameTreeNode = mainSolution.NextStep();
-      GameTreeNode altGameTreeNode = altSolution.NextStep();
+      winningGameTreeNode = mainSolution.nextStep();
+      GameTreeNode altGameTreeNode = altSolution.nextStep();
       if (isSolvable()) {
         break;
       }
@@ -85,12 +63,12 @@ public class Solver {
       return null;
     }
     GameTreeNode gameTreeNode = winningGameTreeNode;
-    BoardIterable reverseIterator = new BoardIterable();
+    Stack<Board> stack = new Stack<Board>();
     while (gameTreeNode != null) {
-      reverseIterator.add(gameTreeNode.board);
+      stack.push(gameTreeNode.board);
       gameTreeNode = gameTreeNode.previous;
     }
-    return reverseIterator;
+    return stack;
   }
 
   private class OneStepSolver {
@@ -99,11 +77,25 @@ public class Solver {
 
     public OneStepSolver(Board initial) {
       GameTreeNode gameTreeRoot = new GameTreeNode(initial);
+
+      final class ManhattanComparator implements Comparator<GameTreeNode> {
+        public int compare(GameTreeNode a, GameTreeNode b) {
+          int manhattanA = a.board.manhattan();
+          int manhattanB = b.board.manhattan();
+          if (manhattanA < manhattanB) {
+            return -1;
+          }
+          if (manhattanA > manhattanB) {
+            return 1;
+          }
+          return 0;
+        }
+      }
       queue = new MinPQ<GameTreeNode>(0, new ManhattanComparator());
       queue.insert(gameTreeRoot);
     }
 
-    public GameTreeNode NextStep() {
+    public GameTreeNode nextStep() {
       if (!queue.isEmpty()) {
         GameTreeNode gameTreeNode = queue.delMin();
         // solutionForNode(gameTreeNode);
@@ -129,58 +121,6 @@ public class Solver {
     // // gameTreeNode = gameTreeNode.previous;
     // // }
     // }
-  }
-
-  private class BoardIterable implements Iterable<Board> {
-    BoardStack iter;
-
-    public BoardIterable() {
-      iter = new BoardStack();
-    }
-
-    public void add(Board b) {
-      iter.add(b);
-    }
-
-    public Iterator<Board> iterator() {
-      return iter;
-    }
-
-    private class BoardStack implements Iterator<Board> {
-      private class BoardNode {
-        public Board board;
-        public BoardNode previous;
-
-        public BoardNode(Board b) {
-          this.board = b;
-        }
-      }
-
-      BoardNode current;
-
-      public void add(Board b) {
-        BoardNode node = new BoardNode(b);
-        if (current == null) {
-          current = node;
-        } else {
-          node.previous = current;
-          current = node;
-        }
-      }
-
-      public boolean hasNext() {
-        return current != null;
-      }
-
-      public Board next() {
-        if (!hasNext()) {
-          throw new java.util.NoSuchElementException();
-        }
-        Board board = current.board;
-        current = current.previous;
-        return board;
-      }
-    }
   }
 
   // test client (see below)
