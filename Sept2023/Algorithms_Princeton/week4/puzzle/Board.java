@@ -9,7 +9,12 @@ public class Board {
   // create a board from an n-by-n array of tiles,
   // where tiles[row][col] = tile at (row, col)
   public Board(int[][] tiles) {
-    this.currentTiles = tiles.clone();
+    this.currentTiles = new int[tiles.length][tiles.length];
+    for (int row = 0; row < this.currentTiles.length; row++) {
+      for (int col = 0; col < this.currentTiles[row].length; col++) {
+        this.currentTiles[row][col] = tiles[row][col];
+      }
+    }
   }
 
   // string representation of this board
@@ -225,6 +230,11 @@ public class Board {
     StdOut.println(initial);
 
     StdOut.println(initial.hamming());
+    StdOut.println("manhattan");
+    StdOut.println(initial.manhattan());
+    tiles[1][1] = 5;
+    tiles[2][1] = 2;
+    StdOut.println("manhattan");
     StdOut.println(initial.manhattan());
 
     StdOut.println("neighbors");
@@ -233,7 +243,7 @@ public class Board {
 
     StdOut.println("twins");
     StdOut.println(initial.twin());
-    StdOut.println(initial.twin());
-    StdOut.println(initial.twin());
+
+    StdOut.println("other");
   }
 }

@@ -1,5 +1,4 @@
 import java.util.Comparator;
-import java.util.HashMap;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
@@ -10,6 +9,7 @@ public class Solver {
   private class GameTreeNode {
     private Board board;
     private GameTreeNode previous;
+    private int moves;
 
     public GameTreeNode(Board b) {
       board = b;
@@ -18,20 +18,42 @@ public class Solver {
 
   private GameTreeNode winningGameTreeNode;
 
+  private final class ManhattanComparator implements Comparator<GameTreeNode> {
+    public int compare(GameTreeNode a, GameTreeNode b) {
+      int priorityA = a.board.manhattan() + a.moves;
+      int priorityB = b.board.manhattan() + b.moves;
+      if (priorityA < priorityB) {
+        return -1;
+      }
+      if (priorityA > priorityB) {
+        return 1;
+      }
+      return 0;
+    }
+  }
+
   // find a solution to the initial board (using the A* algorithm)
   public Solver(Board initial) {
     if (initial == null) {
       throw new IllegalArgumentException();
     }
-    OneStepSolver mainSolution = new OneStepSolver(initial);
+    MinPQ<GameTreeNode> mainQueue = new MinPQ<GameTreeNode>(0, new ManhattanComparator());
+    GameTreeNode mainGameTreeRoot = new GameTreeNode(initial);
+    mainGameTreeRoot.moves = 0;
+    mainQueue.insert(mainGameTreeRoot);
+
     Board alt = initial.twin();
-    OneStepSolver altSolution = new OneStepSolver(alt);
+    MinPQ<GameTreeNode> altQueue = new MinPQ<GameTreeNode>(0, new ManhattanComparator());
+    GameTreeNode altGameTreeRoot = new GameTreeNode(alt);
+    altGameTreeRoot.moves = 0;
+    altQueue.insert(altGameTreeRoot);
+
     while (true) {
-      winningGameTreeNode = mainSolution.nextStep();
-      GameTreeNode altGameTreeNode = altSolution.nextStep();
+      winningGameTreeNode = nextStep(mainQueue);
       if (isSolvable()) {
         break;
       }
+      GameTreeNode altGameTreeNode = nextStep(altQueue);
       if (altGameTreeNode != null) {
         break;
       }
@@ -71,57 +93,36 @@ public class Solver {
     return stack;
   }
 
-  private class OneStepSolver {
-    private MinPQ<GameTreeNode> queue;
-    private GameTreeNode winningGameTreeNode;
-
-    public OneStepSolver(Board initial) {
-      GameTreeNode gameTreeRoot = new GameTreeNode(initial);
-
-      final class ManhattanComparator implements Comparator<GameTreeNode> {
-        public int compare(GameTreeNode a, GameTreeNode b) {
-          int manhattanA = a.board.manhattan();
-          int manhattanB = b.board.manhattan();
-          if (manhattanA < manhattanB) {
-            return -1;
-          }
-          if (manhattanA > manhattanB) {
-            return 1;
-          }
-          return 0;
+  private GameTreeNode nextStep(MinPQ<GameTreeNode> queue) {
+    if (!queue.isEmpty()) {
+      GameTreeNode gameTreeNode = queue.delMin();
+      // solutionForNode(gameTreeNode, name);
+      if (gameTreeNode.board.isGoal()) {
+        return gameTreeNode;
+      }
+      for (Board board : gameTreeNode.board.neighbors()) {
+        if (gameTreeNode.previous == null || !board.equals(gameTreeNode.previous.board)) {
+          GameTreeNode newGameTreeNode = new GameTreeNode(board);
+          newGameTreeNode.moves = gameTreeNode.moves + 1;
+          newGameTreeNode.previous = gameTreeNode;
+          queue.insert(newGameTreeNode);
         }
       }
-      queue = new MinPQ<GameTreeNode>(0, new ManhattanComparator());
-      queue.insert(gameTreeRoot);
     }
 
-    public GameTreeNode nextStep() {
-      if (!queue.isEmpty()) {
-        GameTreeNode gameTreeNode = queue.delMin();
-        // solutionForNode(gameTreeNode);
-        if (gameTreeNode.board.isGoal()) {
-          winningGameTreeNode = gameTreeNode;
-        }
-        for (Board board : gameTreeNode.board.neighbors()) {
-          if (gameTreeNode.previous == null || !board.equals(gameTreeNode.previous.board)) {
-            GameTreeNode newGameTreeNode = new GameTreeNode(board);
-            newGameTreeNode.previous = gameTreeNode;
-            queue.insert(newGameTreeNode);
-          }
-        }
-      }
-
-      return winningGameTreeNode;
-    }
-
-    // public void solutionForNode(GameTreeNode gameTreeNode) {
-    // StdOut.println("solutionForNode");
-    // // while (gameTreeNode != null) {
-    // StdOut.println(gameTreeNode.board);
-    // // gameTreeNode = gameTreeNode.previous;
-    // // }
-    // }
+    return null;
   }
+
+  // private void solutionForNode(GameTreeNode gameTreeNode, String name) {
+  // StdOut.println(name);
+  // // while (gameTreeNode != null) {
+  // StdOut.println(gameTreeNode.board);
+  // StdOut.println(gameTreeNode.board.manhattan());
+  // StdOut.println("----------");
+  // StdOut.println();
+  // // gameTreeNode = gameTreeNode.previous;
+  // // }
+  // }
 
   // test client (see below)
   public static void main(String[] args) {
