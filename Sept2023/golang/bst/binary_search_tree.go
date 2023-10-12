@@ -22,6 +22,22 @@ func (b *BinarySearchTree[K, V]) Search(key K) *TreeNode[K, V] {
 	return b.root.search(key)
 }
 
+func (b *BinarySearchTree[K, V]) Min() *TreeNode[K, V] {
+	return b.root.min()
+}
+
+func (b *BinarySearchTree[K, V]) Max() *TreeNode[K, V] {
+	return b.root.max()
+}
+
+func (b *BinarySearchTree[K, V]) Floor(key K) *TreeNode[K, V] {
+	return b.root.floor(key)
+}
+
+func (b *BinarySearchTree[K, V]) Ceil(key K) *TreeNode[K, V] {
+	return b.root.ceil(key)
+}
+
 func (b *BinarySearchTree[K, V]) Print() string {
 	str := ""
 	nodes := b.InOrder()
@@ -79,6 +95,58 @@ func (t *TreeNode[K, V]) search(key K) *TreeNode[K, V] {
 		return t.left.search(key)
 	} else if key > t.key {
 		return t.right.search(key)
+	}
+	return t
+}
+
+func (t *TreeNode[K, V]) min() *TreeNode[K, V] {
+	if t == nil {
+		return nil
+	}
+	if t.left != nil {
+		return t.left.min()
+	}
+	return t
+}
+
+func (t *TreeNode[K, V]) max() *TreeNode[K, V] {
+	if t == nil {
+		return nil
+	}
+	if t.right != nil {
+		return t.right.max()
+	}
+	return t
+}
+
+func (t *TreeNode[K, V]) floor(key K) *TreeNode[K, V] {
+	if t == nil {
+		return nil
+	}
+	if key < t.key {
+		return t.left.floor(key)
+	} else if key > t.key {
+		rightFloor := t.right.floor(key)
+		if rightFloor == nil {
+			return t
+		}
+		return rightFloor
+	}
+	return t
+}
+
+func (t *TreeNode[K, V]) ceil(key K) *TreeNode[K, V] {
+	if t == nil {
+		return nil
+	}
+	if key < t.key {
+		leftCeil := t.left.ceil(key)
+		if leftCeil == nil {
+			return t
+		}
+		return leftCeil
+	} else if key > t.key {
+		return t.right.ceil(key)
 	}
 	return t
 }

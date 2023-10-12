@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_String(t *testing.T) {
+func Test_BST(t *testing.T) {
 	t.Run("insert", func(t *testing.T) {
 		var b = constructRandomBST()
 		expected := constructExpectedBST()
@@ -24,11 +24,63 @@ func Test_String(t *testing.T) {
 		assert.Equal(t, expected.key, actual.key)
 		assert.Equal(t, expected.value, actual.value)
 	})
-	t.Run("min", func(t *testing.T) {})
-	t.Run("max", func(t *testing.T) {})
-	t.Run("floor", func(t *testing.T) {})
-	t.Run("ceil", func(t *testing.T) {})
-	t.Run("inorder", func(t *testing.T) {})
+	t.Run("min", func(t *testing.T) {
+		var b = constructRandomBST()
+		expected := TreeNode[string, string]{key: "A", value: "A"}
+		actual := b.Min()
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+	})
+
+	t.Run("max", func(t *testing.T) {
+		var b = constructRandomBST()
+		expected := TreeNode[string, string]{key: "ZZZZZZZZZZZ", value: "ZZZZZZZZZZZ"}
+		actual := b.Max()
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+	})
+
+	t.Run("floor", func(t *testing.T) {
+		var b = constructRandomBST()
+		expected := TreeNode[string, string]{key: "GG", value: "GG"}
+		actual := b.Floor("GGA")
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+		expected = TreeNode[string, string]{key: "FFFFFFFFFFF", value: "FFFFFFFFFFF"}
+		actual = b.Floor("FGA")
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+		expected = TreeNode[string, string]{key: "HHH", value: "HHH"}
+		actual = b.Floor("HHH")
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+	})
+
+	t.Run("ceil", func(t *testing.T) {
+		var b = constructRandomBST()
+		expected := TreeNode[string, string]{key: "H", value: "H"}
+		actual := b.Ceil("GGH")
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+		expected = TreeNode[string, string]{key: "KK", value: "KK"}
+		actual = b.Ceil("KAL")
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+		expected = TreeNode[string, string]{key: "MM", value: "MM"}
+		actual = b.Ceil("MM")
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+	})
+	t.Run("inorder", func(t *testing.T) {
+		var b = constructRandomBST()
+		expected := constructExpectedBST()
+		actual := b.InOrder()
+		assert.Equal(t, len(expected), len(actual))
+		for i := range expected {
+			assert.Equal(t, expected[i].key, actual[i].key)
+			assert.Equal(t, expected[i].value, actual[i].value)
+		}
+	})
 }
 
 func constructExpectedBST() []*TreeNode[string, string] {
