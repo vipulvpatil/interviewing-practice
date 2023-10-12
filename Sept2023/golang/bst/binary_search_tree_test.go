@@ -17,7 +17,13 @@ func Test_String(t *testing.T) {
 			assert.Equal(t, expected[i].value, actual[i].value)
 		}
 	})
-	t.Run("search", func(t *testing.T) {})
+	t.Run("search", func(t *testing.T) {
+		var b = constructRandomBST()
+		expected := TreeNode[string, string]{key: "AA", value: "AA"}
+		actual := b.Search("AA")
+		assert.Equal(t, expected.key, actual.key)
+		assert.Equal(t, expected.value, actual.value)
+	})
 	t.Run("min", func(t *testing.T) {})
 	t.Run("max", func(t *testing.T) {})
 	t.Run("floor", func(t *testing.T) {})

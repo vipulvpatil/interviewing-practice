@@ -18,6 +18,10 @@ func (b *BinarySearchTree[K, V]) Insert(key K, value V) {
 	b.root = b.root.add(key, value)
 }
 
+func (b *BinarySearchTree[K, V]) Search(key K) *TreeNode[K, V] {
+	return b.root.search(key)
+}
+
 func (b *BinarySearchTree[K, V]) Print() string {
 	str := ""
 	nodes := b.InOrder()
@@ -63,6 +67,18 @@ func (t *TreeNode[K, V]) add(key K, value V) *TreeNode[K, V] {
 		t.right = t.right.add(key, value)
 	} else {
 		t.value = value
+	}
+	return t
+}
+
+func (t *TreeNode[K, V]) search(key K) *TreeNode[K, V] {
+	if t == nil {
+		return nil
+	}
+	if key < t.key {
+		return t.left.search(key)
+	} else if key > t.key {
+		return t.right.search(key)
 	}
 	return t
 }
