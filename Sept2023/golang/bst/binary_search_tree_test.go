@@ -1,4 +1,4 @@
-package bst
+package main
 
 import (
 	"testing"
