@@ -56,35 +56,25 @@ func (b *BinarySearchTree[K, V]) Print() string {
 }
 
 func PrettyPrint(b *BinarySearchTree[string, string]) {
-	tabsIndex := make(map[TreeNode[string, string]]int)
 	levelIndex := make(map[TreeNode[string, string]]int)
-	for i, node := range b.InOrder() {
-		tabsIndex[*node] = i
-	}
 	levelIndex[*b.root] = 0
-	tabsIndex[*b.root] = 40
 	for _, node := range b.BFS() {
 		if node.left != nil {
 			levelIndex[*node.left] = levelIndex[*node] + 1
-			tabsIndex[*node.left] = tabsIndex[*node] - (20 / levelIndex[*node.left])
 		}
 		if node.right != nil {
 			levelIndex[*node.right] = levelIndex[*node] + 1
-			tabsIndex[*node.right] = tabsIndex[*node] + (20 / levelIndex[*node.right])
 		}
 	}
+	fmt.Println("printing tree")
 	currentLevel := 0
-	currentLevelSpaceCount := 0
 	for _, node := range b.BFS() {
 		if levelIndex[*node] != currentLevel {
 			currentLevel++
 			fmt.Println()
-			currentLevelSpaceCount = 0
 		}
 
-		for ; currentLevelSpaceCount < tabsIndex[*node]; currentLevelSpaceCount++ {
-			fmt.Print(" ")
-		}
+		fmt.Print(" - ")
 		if node.left != nil {
 			fmt.Printf(" %s<", node.left.value)
 		} else {
@@ -95,6 +85,7 @@ func PrettyPrint(b *BinarySearchTree[string, string]) {
 			fmt.Printf(">%s ", node.right.value)
 		}
 	}
+	fmt.Println()
 }
 
 func (b *BinarySearchTree[K, V]) BFS() []*TreeNode[K, V] {
@@ -178,14 +169,17 @@ func (t *TreeNode[K, V]) del(key K) *TreeNode[K, V] {
 		return nil
 	}
 	if key < t.key {
-		return t.left.del(key)
+		t.left = t.left.del(key)
+		return t
 	} else if key > t.key {
-		return t.right.del(key)
+		t.right = t.right.del(key)
+		return t
 	}
 	if t.right != nil {
 		min := t.right.min()
+		min.right = t.right.del(min.key)
+		min.left = t.left
 		t = min
-		t.right = t.right.del(min.key)
 		return t
 	} else {
 		return t.left
@@ -265,5 +259,11 @@ func main() {
 	root.Insert("B", "B")
 	root.Insert("DDD", "DDD")
 	root.Insert("VVVV", "VVVV")
+	PrettyPrint(&root)
+	root.Delete("A")
+	PrettyPrint(&root)
+	root.Delete("PQ")
+	PrettyPrint(&root)
+	root.Delete("MM")
 	PrettyPrint(&root)
 }
