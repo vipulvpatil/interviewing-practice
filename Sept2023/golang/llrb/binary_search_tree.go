@@ -11,7 +11,7 @@ type NodeColor int
 
 const (
 	RED   NodeColor = 0
-	WHITE NodeColor = 1
+	BLACK NodeColor = 1
 )
 
 type LLRBBinarySearchTree[K constraints.Ordered, V any] struct {
@@ -24,10 +24,13 @@ func (b *LLRBBinarySearchTree[K, V]) InOrder() []*LLRBTreeNode[K, V] {
 
 func (b *LLRBBinarySearchTree[K, V]) Insert(key K, value V) {
 	b.root = b.root.add(key, value)
+	b.root.color = BLACK
 }
 
 func (b *LLRBBinarySearchTree[K, V]) Delete(key K) {
+	fmt.Println("deleting ", key)
 	b.root = b.root.del(key)
+	b.root.color = BLACK
 }
 
 func (b *LLRBBinarySearchTree[K, V]) Search(key K) *LLRBTreeNode[K, V] {
@@ -95,9 +98,7 @@ func PrettyPrint(b *LLRBBinarySearchTree[string, string]) {
 
 		fmt.Print(" - ")
 		if node.left != nil {
-			fmt.Printf(" %s<", node.left.value)
-		} else {
-			fmt.Print(" ")
+			fmt.Printf("%s<", node.left.value)
 		}
 		color := "B"
 		if node.isRed() {
@@ -111,7 +112,7 @@ func PrettyPrint(b *LLRBBinarySearchTree[string, string]) {
 			if node.right.isRed() {
 				fmt.Printf("**")
 			}
-			fmt.Printf(">%s ", node.right.value)
+			fmt.Printf(">%s", node.right.value)
 		}
 	}
 	fmt.Println()
@@ -185,8 +186,15 @@ func (t *LLRBTreeNode[K, V]) add(key K, value V) *LLRBTreeNode[K, V] {
 }
 
 func (t *LLRBTreeNode[K, V]) flipColors() {
-	t.left.color = 1 - t.left.color
-	t.right.color = 1 - t.right.color
+	if t == nil {
+		return
+	}
+	if t.left != nil {
+		t.left.color = 1 - t.left.color
+	}
+	if t.right != nil {
+		t.right.color = 1 - t.right.color
+	}
 	t.color = 1 - t.color
 }
 
@@ -254,21 +262,67 @@ func (t *LLRBTreeNode[K, V]) del(key K) *LLRBTreeNode[K, V] {
 		return nil
 	}
 	if key < t.key {
+		if !t.left.isRed() && t.left != nil && t.left.left.isRed() {
+			t = t.moveRedLeft()
+		}
 		t.left = t.left.del(key)
-		return t
-	} else if key > t.key {
-		t.right = t.right.del(key)
-		return t
-	}
-	if t.right != nil {
-		min := t.right.min()
-		min.right = t.right.del(min.key)
-		min.left = t.left
-		t = min
-		return t
 	} else {
-		return t.left
+		if t.left.isRed() {
+			t = t.rotateRight()
+		}
+		if key == t.key && t.right == nil {
+			fmt.Println("this works??? ", t.key)
+			return nil
+		}
+		if !t.right.isRed() && t.right != nil && !t.right.left.isRed() {
+			t = t.moveRedRight()
+		}
+		if key == t.key {
+			min := t.right.min()
+			min.right = t.right.del(min.key)
+			min.left = t.left
+			t = min
+		} else {
+			t.right = t.right.del(key)
+		}
 	}
+	fmt.Println("fix up", t.key)
+	return t.fixUp()
+}
+
+func (t *LLRBTreeNode[K, V]) fixUp() *LLRBTreeNode[K, V] {
+	if t == nil {
+		return nil
+	}
+	if t.right.isRed() {
+		t = t.rotateLeft()
+	}
+	if t.left.isRed() && t.left != nil && t.left.left.isRed() {
+		t = t.rotateRight()
+	}
+	if t.right.isRed() && t.left.isRed() {
+		t.flipColors()
+	}
+	return t
+}
+
+func (t *LLRBTreeNode[K, V]) moveRedLeft() *LLRBTreeNode[K, V] {
+	t.flipColors()
+	if t.right != nil && t.right.left.isRed() {
+		t.right = t.right.rotateRight()
+		t = t.rotateLeft()
+		t.flipColors()
+	}
+	return t
+}
+
+func (t *LLRBTreeNode[K, V]) moveRedRight() *LLRBTreeNode[K, V] {
+	t.flipColors()
+	if t.left != nil && t.left.left.isRed() {
+		t = t.rotateRight()
+		t.flipColors()
+	}
+	return t
 }
 
 func (t *LLRBTreeNode[K, V]) max() *LLRBTreeNode[K, V] {
@@ -345,10 +399,11 @@ func main() {
 	root.Insert("DDD", "DDD")
 	root.Insert("VVVV", "VVVV")
 	PrettyPrint(&root)
-	// root.Delete("A")
-	// PrettyPrint(&root)
-	// root.Delete("PQ")
-	// PrettyPrint(&root)
-	// root.Delete("MM")
-	// PrettyPrint(&root)
+	root.Delete("WW")
+	PrettyPrint(&root)
+	root.Delete("P")
+	PrettyPrint(&root)
+	root.Delete("OOO")
+	PrettyPrint(&root)
+	fmt.Println(root.Print())
 }
