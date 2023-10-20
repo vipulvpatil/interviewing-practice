@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Set;
 
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
@@ -19,10 +18,14 @@ public class KdTree {
     }
 
     public int size() {
-      if (this == null) {
-        return 0;
+      int totalSize = 1;
+      if (this.left != null) {
+        totalSize += this.left.size();
       }
-      return 1 + this.left.size() + this.right.size();
+      if (this.right != null) {
+        totalSize += this.right.size();
+      }
+      return totalSize;
     }
 
   }
@@ -213,11 +216,8 @@ public class KdTree {
       return closest;
     }
     Point2D newClosest = closest;
-    double currDistSqr = p.distanceSquaredTo(n.point);
-    double minDistSq = p.distanceSquaredTo(closest);
-    if (currDistSqr < minDistSq) {
+    if (p.distanceSquaredTo(n.point) < p.distanceSquaredTo(closest)) {
       newClosest = n.point;
-      minDistSq = currDistSqr;
     }
 
     if (xDim) {
@@ -225,14 +225,14 @@ public class KdTree {
       RectHV rightBounds = new RectHV(n.point.x(), bounds.ymin(), bounds.xmax(), bounds.ymax());
       if (p.x() < n.point.x()) {
         newClosest = nearest(n.left, p, newClosest, !xDim, leftBounds);
-        double minDist = p.distanceTo(newClosest);
-        if (minDist > Math.abs(p.x() - n.point.x())) {
+        double minDistSq = p.distanceSquaredTo(newClosest);
+        if (minDistSq > Math.pow(p.x() - n.point.x(), 2)) {
           newClosest = nearest(n.right, p, newClosest, !xDim, rightBounds);
         }
       } else {
         newClosest = nearest(n.right, p, newClosest, !xDim, rightBounds);
-        double minDist = p.distanceTo(newClosest);
-        if (minDist > Math.abs(p.x() - n.point.x())) {
+        double minDistSq = p.distanceSquaredTo(newClosest);
+        if (minDistSq > Math.pow(p.x() - n.point.x(), 2)) {
           newClosest = nearest(n.left, p, newClosest, !xDim, leftBounds);
         }
       }
@@ -241,14 +241,14 @@ public class KdTree {
       RectHV rightBounds = new RectHV(bounds.xmin(), n.point.y(), bounds.xmax(), bounds.ymax());
       if (p.y() < n.point.y()) {
         newClosest = nearest(n.left, p, newClosest, !xDim, leftBounds);
-        double minDist = p.distanceTo(newClosest);
-        if (minDist > Math.abs(p.y() - n.point.y())) {
+        double minDistSq = p.distanceSquaredTo(newClosest);
+        if (minDistSq > Math.pow(p.y() - n.point.y(), 2)) {
           newClosest = nearest(n.right, p, newClosest, !xDim, rightBounds);
         }
       } else {
         newClosest = nearest(n.right, p, newClosest, !xDim, rightBounds);
-        double minDist = p.distanceTo(newClosest);
-        if (minDist > Math.abs(p.y() - n.point.y())) {
+        double minDistSq = p.distanceSquaredTo(newClosest);
+        if (minDistSq > Math.pow(p.y() - n.point.y(), 2)) {
           newClosest = nearest(n.left, p, newClosest, !xDim, leftBounds);
         }
       }

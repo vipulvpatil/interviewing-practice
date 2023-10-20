@@ -59,7 +59,7 @@ public class PointSET {
       return null;
     }
     Point2D closest = points.min();
-    double minDistSq = Double.MAX_VALUE;
+    double minDistSq = Double.POSITIVE_INFINITY;
     for (Point2D point : points) {
       double distSq = p.distanceSquaredTo(point);
       if (distSq < minDistSq) {
