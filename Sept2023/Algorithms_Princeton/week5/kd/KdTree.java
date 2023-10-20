@@ -9,23 +9,18 @@ public class KdTree {
     public Point2D point;
     public Node left;
     public Node right;
+    private int size;
 
     public Node(Point2D p) {
       if (p == null) {
         throw new IllegalArgumentException();
       }
       point = p;
+      size = 1;
     }
 
     public int size() {
-      int totalSize = 1;
-      if (this.left != null) {
-        totalSize += this.left.size();
-      }
-      if (this.right != null) {
-        totalSize += this.right.size();
-      }
-      return totalSize;
+      return size;
     }
 
   }
@@ -92,7 +87,7 @@ public class KdTree {
       return new Node(p);
     }
     if (n.point.equals(p)) {
-      return null;
+      return n;
     }
     boolean isLess;
     if (xDim) {
@@ -113,6 +108,14 @@ public class KdTree {
     } else {
       n.right = add(n.right, p, !xDim);
     }
+    int localSize = 1;
+    if (n.left != null) {
+      localSize += n.left.size();
+    }
+    if (n.right != null) {
+      localSize += n.right.size();
+    }
+    n.size = localSize;
     return n;
   }
 
