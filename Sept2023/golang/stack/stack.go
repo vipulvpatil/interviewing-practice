@@ -18,6 +18,15 @@ func (s *Stack[T]) Pop() *T {
 	return &value
 }
 
+func (s *Stack[T]) Top() *T {
+	if s.IsEmpty() {
+		return nil
+	}
+	length := len(s.values)
+	value := s.values[length-1]
+	return &value
+}
+
 func (s *Stack[T]) IsEmpty() bool {
 	return len(s.values) == 0
 }
