@@ -12,6 +12,12 @@ func NewGraph[T comparable]() *Graph[T] {
 	}
 }
 
+func (g *Graph[T]) AddVertex(v T) {
+	if _, vOk := g.adjacency[v]; !vOk {
+		g.adjacency[v] = []T{}
+	}
+}
+
 func (g *Graph[T]) AddEdge(v, w T) {
 	vAdjacency, vOk := g.adjacency[v]
 	wAdjacency, wOk := g.adjacency[w]
@@ -59,4 +65,8 @@ func (g Graph[T]) String() string {
 		}
 	}
 	return retString
+}
+
+func (g *Graph[T]) Adjacency() map[T][]T {
+	return g.adjacency
 }
