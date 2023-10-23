@@ -1,0 +1,13 @@
+0,zero,what
+1,one,what
+2,two,what
+3,three three2,what
+4,four,what
+5,five,what
+6,six,what
+7,seven,what
+8,eight eight2,what
+9,nine,what
+10,ten,what
+11,eleven,what
+12,twelve,what
