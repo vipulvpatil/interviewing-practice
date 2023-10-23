@@ -2,12 +2,11 @@ import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 public class SAP {
-  private Digraph graph;
+  private final Digraph graph;
 
   // constructor takes a digraph (not necessarily a DAG)
   public SAP(Digraph G) {
@@ -39,6 +38,9 @@ public class SAP {
     if (v == null || w == null) {
       throw new IllegalArgumentException();
     }
+    if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+      return -1;
+    }
     SAPCalculator sapc = new SAPCalculator(graph, v, w);
     return sapc.shortestDistance();
   }
@@ -48,6 +50,9 @@ public class SAP {
   public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
     if (v == null || w == null) {
       throw new IllegalArgumentException();
+    }
+    if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+      return -1;
     }
     SAPCalculator sapc = new SAPCalculator(graph, v, w);
     return sapc.sca();
@@ -69,7 +74,7 @@ public class SAP {
 
   private class SAPCalculator {
     private int minDistance;
-    private int shortestCommonAncestor;
+    private final int shortestCommonAncestor;
 
     public SAPCalculator(Digraph graph, Iterable<Integer> v, Iterable<Integer> w) {
       BreadthFirstDirectedPaths bfsPathsV = new BreadthFirstDirectedPaths(graph, v);
