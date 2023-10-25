@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	findMST()
+	digraphCheck()
 }
 
 func findMST() {
@@ -113,26 +113,13 @@ func digraphCheck() {
 	fmt.Println(g)
 	fmt.Println(g.Reverse())
 
-	var p diprocessor.TraversalDiGraphProcessor[int]
-
-	p = diprocessor.NewTraversalDiGraphProcessor[int](g)
-	diprocessor.Dfs[int](p)
-	fmt.Println(p.Result())
-
-	p = diprocessor.NewTraversalDiGraphProcessor[int](g)
-	diprocessor.Bfs[int](p)
-	fmt.Println(p.Result())
-
-	p = diprocessor.NewTraversalDiGraphProcessor[int](g)
-	diprocessor.DfsFromSource[int](p, 0)
-	fmt.Println(p.Result())
-
-	p = diprocessor.NewTraversalDiGraphProcessor[int](g)
-	diprocessor.BfsFromSource[int](p, 0)
-	fmt.Println(p.Result())
+	fmt.Println(diprocessor.Dfs[int](*g))
+	fmt.Println(diprocessor.Bfs[int](*g))
+	fmt.Println(diprocessor.DfsFromSource[int](*g, 0))
+	fmt.Println(diprocessor.BfsFromSource[int](*g, 0))
 
 	fmt.Println()
-	p = diprocessor.NewTraversalDiGraphProcessor[int](g)
+	p := diprocessor.NewTraversalDiGraphProcessor[int](g)
 	fmt.Println(diprocessor.TopologicalOrder[int](p))
 }
 
@@ -184,21 +171,8 @@ func traversalCheck() {
 	fmt.Println(g.E())
 	fmt.Println(g)
 
-	var p processor.TraversalGraphProcessor[int]
-
-	p = processor.NewTraversalGraphProcessor[int](g)
-	processor.Dfs[int](p)
-	fmt.Println(p.Result())
-
-	p = processor.NewTraversalGraphProcessor[int](g)
-	processor.Bfs[int](p)
-	fmt.Println(p.Result())
-
-	p = processor.NewTraversalGraphProcessor[int](g)
-	processor.DfsFromSource[int](p, 0)
-	fmt.Println(p.Result())
-
-	p = processor.NewTraversalGraphProcessor[int](g)
-	processor.BfsFromSource[int](p, 0)
-	fmt.Println(p.Result())
+	fmt.Println(processor.Dfs[int](*g))
+	fmt.Println(processor.Bfs[int](*g))
+	fmt.Println(processor.DfsFromSource[int](*g, 0))
+	fmt.Println(processor.BfsFromSource[int](*g, 0))
 }

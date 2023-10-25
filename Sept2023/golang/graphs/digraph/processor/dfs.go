@@ -1,20 +1,18 @@
 package processor
 
-import "github.com/vipulvpatil/interviewing-practice/Sept2023/golang/graphs/accumulators"
+import (
+	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/graphs/accumulators"
+	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/graphs/digraph"
+)
 
-func Dfs[T comparable](diGraphProcessor TraversalDiGraphProcessor[T]) {
+func Dfs[T comparable](g digraph.DiGraph[T]) []T {
 	acc := accumulators.StackAccumulator[T]{}
-	graph := diGraphProcessor.DiGraph()
-	for k := range graph.Adjacency() {
-		if !diGraphProcessor.Visited(k) {
-			acc.Add(k)
-			diGraphProcessor.processWithAccumulator(&acc)
-		}
-	}
+	graphProcessor := traverseEntireGraph[T](&g, &acc)
+	return graphProcessor.Result()
 }
 
-func DfsFromSource[T comparable](diGraphProcessor TraversalDiGraphProcessor[T], s T) {
+func DfsFromSource[T comparable](g digraph.DiGraph[T], s T) []T {
 	acc := accumulators.StackAccumulator[T]{}
-	acc.Add(s)
-	diGraphProcessor.processWithAccumulator(&acc)
+	graphProcessor := traverseFromSource[T](&g, &acc, s)
+	return graphProcessor.Result()
 }

@@ -8,7 +8,6 @@ import (
 type TraversalGraphProcessor[T comparable] interface {
 	GraphProcessor[T]
 	Result() []T
-	processTraversalWithAccumulator(acc accumulators.Accumulator[T])
 }
 
 type traversalGraphProcessor[T comparable] struct {
@@ -16,16 +15,49 @@ type traversalGraphProcessor[T comparable] struct {
 	result []T
 }
 
-func NewTraversalGraphProcessor[T comparable](g *graph.Graph[T]) *traversalGraphProcessor[T] {
+func traverseEntireGraph[T comparable](
+	g *graph.Graph[T],
+	acc accumulators.Accumulator[T],
+) *traversalGraphProcessor[T] {
 	if g == nil {
 		return nil
 	}
-	return &traversalGraphProcessor[T]{
+
+	tg := traversalGraphProcessor[T]{
 		graphProcessor: graphProcessor[T]{
 			graph:   g,
 			visited: make(map[T]bool),
 		},
 	}
+
+	for k := range g.Adjacency() {
+		if !tg.Visited(k) {
+			acc.Add(k)
+			tg.processTraversalWithAccumulator(acc)
+		}
+	}
+	return &tg
+}
+
+func traverseFromSource[T comparable](
+	g *graph.Graph[T],
+	acc accumulators.Accumulator[T],
+	s T,
+) *traversalGraphProcessor[T] {
+	if g == nil {
+		return nil
+	}
+
+	tg := traversalGraphProcessor[T]{
+		graphProcessor: graphProcessor[T]{
+			graph:   g,
+			visited: make(map[T]bool),
+		},
+	}
+
+	acc.Add(s)
+	tg.processTraversalWithAccumulator(acc)
+	return &tg
 }
 
 func (g *traversalGraphProcessor[T]) Result() []T {

@@ -8,7 +8,6 @@ import (
 type TraversalDiGraphProcessor[T comparable] interface {
 	DiGraphProcessor[T]
 	Result() []T
-	processWithAccumulator(acc accumulators.Accumulator[T])
 }
 
 type traversalDiGraphProcessor[T comparable] struct {
@@ -28,11 +27,56 @@ func NewTraversalDiGraphProcessor[T comparable](g *digraph.DiGraph[T]) *traversa
 	}
 }
 
+func traverseEntireGraph[T comparable](
+	g *digraph.DiGraph[T],
+	acc accumulators.Accumulator[T],
+) *traversalDiGraphProcessor[T] {
+	if g == nil {
+		return nil
+	}
+
+	tg := traversalDiGraphProcessor[T]{
+		diGraphProcessor: diGraphProcessor[T]{
+			diGraph: g,
+			visited: make(map[T]bool),
+		},
+	}
+
+	for k := range g.Adjacency() {
+		if !tg.Visited(k) {
+			acc.Add(k)
+			tg.processTraversalWithAccumulator(acc)
+		}
+	}
+	return &tg
+}
+
+func traverseFromSource[T comparable](
+	g *digraph.DiGraph[T],
+	acc accumulators.Accumulator[T],
+	s T,
+) *traversalDiGraphProcessor[T] {
+	if g == nil {
+		return nil
+	}
+
+	tg := traversalDiGraphProcessor[T]{
+		diGraphProcessor: diGraphProcessor[T]{
+			diGraph: g,
+			visited: make(map[T]bool),
+		},
+	}
+
+	acc.Add(s)
+	tg.processTraversalWithAccumulator(acc)
+	return &tg
+}
+
 func (g *traversalDiGraphProcessor[T]) Result() []T {
 	return g.result
 }
 
-func (g *traversalDiGraphProcessor[T]) processWithAccumulator(acc accumulators.Accumulator[T]) {
+func (g *traversalDiGraphProcessor[T]) processTraversalWithAccumulator(acc accumulators.Accumulator[T]) {
 	for !acc.IsEmpty() {
 		vertex := acc.Remove()
 		v := *vertex
