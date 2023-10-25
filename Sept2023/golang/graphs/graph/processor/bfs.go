@@ -8,7 +8,7 @@ func Bfs[T comparable](graphProcessor TraversalGraphProcessor[T]) {
 	for k := range graph.Adjacency() {
 		if !graphProcessor.Visited(k) {
 			acc.Add(k)
-			graphProcessor.processWithAccumulator(&acc)
+			graphProcessor.processTraversalWithAccumulator(&acc)
 		}
 	}
 }
@@ -16,5 +16,5 @@ func Bfs[T comparable](graphProcessor TraversalGraphProcessor[T]) {
 func BfsFromSource[T comparable](graphProcessor TraversalGraphProcessor[T], s T) {
 	acc := accumulators.QueueAccumulator[T]{}
 	acc.Add(s)
-	graphProcessor.processWithAccumulator(&acc)
+	graphProcessor.processTraversalWithAccumulator(&acc)
 }

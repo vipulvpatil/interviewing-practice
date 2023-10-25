@@ -8,7 +8,7 @@ import (
 type TraversalGraphProcessor[T comparable] interface {
 	GraphProcessor[T]
 	Result() []T
-	processWithAccumulator(acc accumulators.Accumulator[T])
+	processTraversalWithAccumulator(acc accumulators.Accumulator[T])
 }
 
 type traversalGraphProcessor[T comparable] struct {
@@ -32,7 +32,7 @@ func (g *traversalGraphProcessor[T]) Result() []T {
 	return g.result
 }
 
-func (g *traversalGraphProcessor[T]) processWithAccumulator(acc accumulators.Accumulator[T]) {
+func (g *traversalGraphProcessor[T]) processTraversalWithAccumulator(acc accumulators.Accumulator[T]) {
 	for !acc.IsEmpty() {
 		vertex := acc.Remove()
 		v := *vertex

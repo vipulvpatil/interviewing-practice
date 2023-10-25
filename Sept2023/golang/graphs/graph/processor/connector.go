@@ -35,7 +35,7 @@ func NewConnectorGraphProcessor[T comparable](g *graph.Graph[T]) *connectorGraph
 	for k := range g.Adjacency() {
 		if !connectorProcessor.graphProcessor.Visited(k) {
 			acc.Add(k)
-			connectorProcessor.processWithAccumulator(&acc)
+			connectorProcessor.processConnectionsWithAccumulator(&acc)
 		}
 	}
 
@@ -52,7 +52,7 @@ func (p *connectorGraphProcessor[T]) connectionId(v T) int {
 	return p.connections[v]
 }
 
-func (p *connectorGraphProcessor[T]) processWithAccumulator(acc accumulators.Accumulator[T]) {
+func (p *connectorGraphProcessor[T]) processConnectionsWithAccumulator(acc accumulators.Accumulator[T]) {
 	for !acc.IsEmpty() {
 		vertex := acc.Remove()
 		v := *vertex
