@@ -10,7 +10,27 @@ import (
 )
 
 func main() {
-	stronglyConnectedCheck()
+	findMST()
+}
+
+func findMST() {
+	g := graph.NewEdgeWeightedGraph[int]()
+	g.AddEdge(graph.NewEdge[int](0, 7, 0.16))
+	g.AddEdge(graph.NewEdge[int](1, 7, 0.19))
+	g.AddEdge(graph.NewEdge[int](0, 2, 0.26))
+	g.AddEdge(graph.NewEdge[int](2, 3, 0.17))
+	g.AddEdge(graph.NewEdge[int](5, 7, 0.28))
+	g.AddEdge(graph.NewEdge[int](4, 5, 0.35))
+	g.AddEdge(graph.NewEdge[int](6, 2, 0.40))
+
+	fmt.Println(g.V())
+	fmt.Println(g.E())
+	fmt.Println(g)
+	fmt.Println(g.Edges())
+
+	// c := diprocessor.NewStronglyConnectorDiGraphProcessor[int](g)
+	// fmt.Println(c.Count())
+	// fmt.Println(c.IsConnected(0, 1), "should be false")
 }
 
 func stronglyConnectedCheck() {
