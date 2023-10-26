@@ -3,19 +3,21 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.awt.Color;
-import java.util.ArrayList;
 
 public class SeamCarver {
   private Picture p;
 
   // create a seam carver object based on the given picture
   public SeamCarver(Picture picture) {
+    if (picture == null) {
+      throw new IllegalArgumentException();
+    }
     p = new Picture(picture);
   }
 
   // current picture
   public Picture picture() {
-    return null;
+    return new Picture(p);
   }
 
   // width of current picture
@@ -57,7 +59,7 @@ public class SeamCarver {
 
   // sequence of indices for horizontal seam
   public int[] findHorizontalSeam() {
-    if (p.width() < 2) {
+    if (p.width() < 1) {
       throw new IllegalArgumentException();
     }
     Pixel[][] horizontalPaths = new Pixel[p.width()][p.height()];
@@ -66,17 +68,17 @@ public class SeamCarver {
     }
     for (int x = 1; x < p.width(); x++) {
       for (int y = 0; y < p.height(); y++) {
-        Pixel p1 = PixelAt(horizontalPaths, x - 1, y);
-        Pixel p2 = PixelAt(horizontalPaths, x - 1, y - 1);
-        Pixel p3 = PixelAt(horizontalPaths, x - 1, y + 1);
-        Pixel minPixel = GetMinimumTotalEnergyPixel(p1, p2, p3);
-        horizontalPaths[x][y] = new Pixel(x, y, minPixel.TotalEnergy() + energy(x, y), minPixel);
+        Pixel p1 = pixelAt(horizontalPaths, x - 1, y);
+        Pixel p2 = pixelAt(horizontalPaths, x - 1, y - 1);
+        Pixel p3 = pixelAt(horizontalPaths, x - 1, y + 1);
+        Pixel minPixel = getMinimumTotalEnergyPixel(p1, p2, p3);
+        horizontalPaths[x][y] = new Pixel(x, y, minPixel.totalEnergy() + energy(x, y), minPixel);
       }
     }
-    Pixel minTotalEnergyPixel = PixelAt(horizontalPaths, p.width() - 1, 0);
+    Pixel minTotalEnergyPixel = pixelAt(horizontalPaths, p.width() - 1, 0);
     for (int y = 1; y < p.height(); y++) {
-      Pixel pixel = PixelAt(horizontalPaths, p.width() - 1, y);
-      if (pixel.TotalEnergy() < minTotalEnergyPixel.TotalEnergy()) {
+      Pixel pixel = pixelAt(horizontalPaths, p.width() - 1, y);
+      if (pixel.totalEnergy() < minTotalEnergyPixel.totalEnergy()) {
         minTotalEnergyPixel = pixel;
       }
     }
@@ -84,8 +86,8 @@ public class SeamCarver {
     Stack<Integer> st = new Stack<>();
     Pixel pixel = minTotalEnergyPixel;
     while (pixel != null) {
-      st.push(pixel.Y());
-      pixel = pixel.Prev();
+      st.push(pixel.y());
+      pixel = pixel.prev();
     }
     int[] arr = new int[st.size()];
     int index = 0;
@@ -97,7 +99,7 @@ public class SeamCarver {
 
   // sequence of indices for vertical seam
   public int[] findVerticalSeam() {
-    if (p.height() < 2) {
+    if (p.height() < 1) {
       throw new IllegalArgumentException();
     }
     Pixel[][] verticalPaths = new Pixel[p.width()][p.height()];
@@ -106,17 +108,17 @@ public class SeamCarver {
     }
     for (int y = 1; y < p.height(); y++) {
       for (int x = 0; x < p.width(); x++) {
-        Pixel p1 = PixelAt(verticalPaths, x, y - 1);
-        Pixel p2 = PixelAt(verticalPaths, x - 1, y - 1);
-        Pixel p3 = PixelAt(verticalPaths, x + 1, y - 1);
-        Pixel minPixel = GetMinimumTotalEnergyPixel(p1, p2, p3);
-        verticalPaths[x][y] = new Pixel(x, y, minPixel.TotalEnergy() + energy(x, y), minPixel);
+        Pixel p1 = pixelAt(verticalPaths, x, y - 1);
+        Pixel p2 = pixelAt(verticalPaths, x - 1, y - 1);
+        Pixel p3 = pixelAt(verticalPaths, x + 1, y - 1);
+        Pixel minPixel = getMinimumTotalEnergyPixel(p1, p2, p3);
+        verticalPaths[x][y] = new Pixel(x, y, minPixel.totalEnergy() + energy(x, y), minPixel);
       }
     }
-    Pixel minTotalEnergyPixel = PixelAt(verticalPaths, 0, p.height() - 1);
+    Pixel minTotalEnergyPixel = pixelAt(verticalPaths, 0, p.height() - 1);
     for (int x = 1; x < p.width(); x++) {
-      Pixel pixel = PixelAt(verticalPaths, x, p.height() - 1);
-      if (pixel.TotalEnergy() < minTotalEnergyPixel.TotalEnergy()) {
+      Pixel pixel = pixelAt(verticalPaths, x, p.height() - 1);
+      if (pixel.totalEnergy() < minTotalEnergyPixel.totalEnergy()) {
         minTotalEnergyPixel = pixel;
       }
     }
@@ -124,8 +126,8 @@ public class SeamCarver {
     Stack<Integer> st = new Stack<>();
     Pixel pixel = minTotalEnergyPixel;
     while (pixel != null) {
-      st.push(pixel.X());
-      pixel = pixel.Prev();
+      st.push(pixel.x());
+      pixel = pixel.prev();
     }
     int[] arr = new int[st.size()];
     int index = 0;
@@ -143,6 +145,31 @@ public class SeamCarver {
     if (p.height() == 1) {
       throw new IllegalArgumentException();
     }
+    if (seam.length != p.width()) {
+      throw new IllegalArgumentException();
+    }
+    for (int i = 0; i < seam.length - 1; i++) {
+      if (seam[i] > p.height() - 1 || seam[i] < 0) {
+        throw new IllegalArgumentException();
+      }
+      if (Math.abs(seam[i] - seam[i + 1]) > 1) {
+        throw new IllegalArgumentException();
+      }
+    }
+    if (seam[seam.length - 1] > p.height() - 1 || seam[seam.length - 1] < 0) {
+      throw new IllegalArgumentException();
+    }
+    Picture newP = new Picture(p.width(), p.height() - 1);
+    for (int x = 0; x < p.width(); x++) {
+      for (int y = 0; y < p.height() - 1; y++) {
+        if (y < seam[x]) {
+          newP.setRGB(x, y, p.getRGB(x, y));
+        } else {
+          newP.setRGB(x, y, p.getRGB(x, y + 1));
+        }
+      }
+    }
+    this.p = newP;
   }
 
   // remove vertical seam from current picture
@@ -153,6 +180,32 @@ public class SeamCarver {
     if (p.width() == 1) {
       throw new IllegalArgumentException();
     }
+    if (seam.length != p.height()) {
+      throw new IllegalArgumentException();
+    }
+    for (int i = 0; i < seam.length - 1; i++) {
+      if (seam[i] > p.width() - 1 || seam[i] < 0) {
+        throw new IllegalArgumentException();
+      }
+      if (Math.abs(seam[i] - seam[i + 1]) > 1) {
+        throw new IllegalArgumentException();
+      }
+    }
+    if (seam[seam.length - 1] > p.width() - 1 || seam[seam.length - 1] < 0) {
+      throw new IllegalArgumentException();
+    }
+
+    Picture newP = new Picture(p.width() - 1, p.height());
+    for (int y = 0; y < p.height(); y++) {
+      for (int x = 0; x < p.width() - 1; x++) {
+        if (x < seam[y]) {
+          newP.setRGB(x, y, p.getRGB(x, y));
+        } else {
+          newP.setRGB(x, y, p.getRGB(x + 1, y));
+        }
+      }
+    }
+    this.p = newP;
   }
 
   // unit testing (optional)
@@ -171,10 +224,10 @@ public class SeamCarver {
   }
 
   private class Pixel {
-    private int x;
-    private int y;
-    private double totalEnergy;
-    private Pixel prev;
+    private final int x;
+    private final int y;
+    private final double totalEnergy;
+    private final Pixel prev;
 
     public Pixel(int x, int y, double totalEnergy, Pixel prev) {
       this.x = x;
@@ -183,48 +236,47 @@ public class SeamCarver {
       this.prev = prev;
     }
 
-    public int X() {
+    public int x() {
       return x;
     }
 
-    public int Y() {
+    public int y() {
       return y;
     }
 
-    public double TotalEnergy() {
+    public double totalEnergy() {
       return this.totalEnergy;
     }
 
-    public Pixel Prev() {
+    public Pixel prev() {
       return this.prev;
     }
   }
 
-  private static Pixel PixelAt(Pixel[][] paths, int x, int y) {
+  private static Pixel pixelAt(Pixel[][] paths, int x, int y) {
     if (x < 0 || y < 0 || x > paths.length - 1 || y > paths[0].length - 1) {
       return null;
     }
     return paths[x][y];
   }
 
-  private static Pixel GetMinimumTotalEnergyPixel(Pixel p1, Pixel p2, Pixel p3) {
+  private static Pixel getMinimumTotalEnergyPixel(Pixel p1, Pixel p2, Pixel p3) {
     Pixel minPixel = p1;
-    double minEnergy = TotalEnergyOf(p1);
-    if (TotalEnergyOf(p2) < minEnergy) {
+    double minEnergy = totalEnergyOf(p1);
+    if (totalEnergyOf(p2) < minEnergy) {
       minPixel = p2;
-      minEnergy = TotalEnergyOf(p2);
+      minEnergy = totalEnergyOf(p2);
     }
-    if (TotalEnergyOf(p3) < minEnergy) {
+    if (totalEnergyOf(p3) < minEnergy) {
       minPixel = p3;
-      minEnergy = TotalEnergyOf(p3);
     }
     return minPixel;
   }
 
-  private static double TotalEnergyOf(Pixel p) {
+  private static double totalEnergyOf(Pixel p) {
     if (p == null) {
       return Double.POSITIVE_INFINITY;
     }
-    return p.TotalEnergy();
+    return p.totalEnergy();
   }
 }
