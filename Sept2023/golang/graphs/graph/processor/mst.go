@@ -1,31 +1,62 @@
 package processor
 
-import "github.com/vipulvpatil/interviewing-practice/Sept2023/golang/graphs/graph"
+import (
+	"container/heap"
+	"sort"
 
-type MSTProcessor[T comparable] interface {
-	Graph() *graph.EdgeWeightedGraph[T]
-	Edges() []graph.Edge[T]
-}
+	"github.com/vipulvpatil/interviewing-practice/Sept2023/golang/graphs/graph"
+)
 
-type mstProcessor[T comparable] struct {
-	inputGraph *graph.EdgeWeightedGraph[T]
-}
-
-func NewMSTProcessor[T comparable](g *graph.EdgeWeightedGraph[T]) *mstProcessor[T] {
-	m := mstProcessor[T]{
-		inputGraph: g,
+func MSTWithKruskal[T comparable](g *graph.EdgeWeightedGraph[T]) []graph.Edge[T] {
+	allEdges := graph.SortByWeight[T](g.Edges())
+	sort.Sort(allEdges)
+	mstEdges := []graph.Edge[T]{}
+	mstEdgeCount := 0
+	for _, edge := range allEdges {
+		newGraph := graph.NewEdgeWeightedGraph[T]()
+		for _, mstEdge := range mstEdges {
+			newGraph.AddEdge(mstEdge)
+		}
+		newGraph.AddEdge(edge)
+		if !CyclesDetectedInEdgeWeightedGraph(*newGraph) {
+			mstEdges = append(mstEdges, edge)
+			mstEdgeCount++
+		}
+		if mstEdgeCount >= g.V()-1 {
+			break
+		}
 	}
-	// sort graph edges.
-	// create a graph one edge at a time starting from lowest to highest
-	// if cycle found, skip.
-	// Do so until V-1 edges or we run out of edges.
-	return &m
+	return mstEdges
 }
 
-func (m *mstProcessor[T]) Graph() *graph.EdgeWeightedGraph[T] {
-	return m.inputGraph
-}
+func MSTWithPrim[T comparable](g *graph.EdgeWeightedGraph[T]) []graph.Edge[T] {
+	mstEdges := []graph.Edge[T]{}
+	includedVertices := make(map[T]bool)
+	pq := graph.MinWeightedEdgePQ[T]{}
 
-func (m *mstProcessor[T]) Edges() []graph.Edge[T] {
-	return nil
+	firstVertex := g.Edges()[0].Either()
+	includedVertices[firstVertex] = true
+	for _, edge := range g.Adj(firstVertex) {
+		pq.Push(edge)
+	}
+	heap.Init(&pq)
+	vertextCount := g.V()
+	for len(mstEdges) < vertextCount-1 && pq.Len() > 0 {
+		edge := heap.Pop(&pq).(graph.Edge[T])
+		v := edge.Either()
+		_, okV := includedVertices[v]
+		if !okV {
+			v = edge.Other(v)
+		}
+		w := edge.Other(v)
+		_, okW := includedVertices[w]
+		if !okW {
+			mstEdges = append(mstEdges, edge)
+			includedVertices[w] = true
+			for _, edge := range g.Adj(w) {
+				heap.Push(&pq, edge)
+			}
+		}
+	}
+	return mstEdges
 }

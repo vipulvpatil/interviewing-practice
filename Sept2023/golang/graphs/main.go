@@ -10,27 +10,70 @@ import (
 )
 
 func main() {
-	digraphCheck()
+	findShortestPath()
+}
+
+func findShortestPath() {
+	g := digraph.NewEdgeWeightedDiGraph[int]()
+	g.AddEdge(0, 1, 5.0)
+	g.AddEdge(0, 4, 9.0)
+	g.AddEdge(0, 7, 8.0)
+	g.AddEdge(1, 2, 12.0)
+	g.AddEdge(1, 3, 15.0)
+	g.AddEdge(1, 7, 4.0)
+	g.AddEdge(2, 3, 3.0)
+	g.AddEdge(2, 6, 11.0)
+	g.AddEdge(3, 6, 9.0)
+	g.AddEdge(4, 5, 4.0)
+	g.AddEdge(4, 6, 20.0)
+	g.AddEdge(4, 7, 5.0)
+	g.AddEdge(5, 2, 1.0)
+	g.AddEdge(5, 6, 13.0)
+	g.AddEdge(7, 5, 6.0)
+	g.AddEdge(7, 2, 7.0)
+
+	fmt.Println(diprocessor.AllShortestPaths[int](g))
 }
 
 func findMST() {
 	g := graph.NewEdgeWeightedGraph[int]()
+	g.AddEdge(graph.NewEdge[int](4, 5, 0.35))
+	g.AddEdge(graph.NewEdge[int](4, 7, 0.37))
+	g.AddEdge(graph.NewEdge[int](5, 7, 0.28))
 	g.AddEdge(graph.NewEdge[int](0, 7, 0.16))
+	g.AddEdge(graph.NewEdge[int](1, 5, 0.32))
+	g.AddEdge(graph.NewEdge[int](0, 4, 0.38))
+	g.AddEdge(graph.NewEdge[int](2, 3, 0.17))
 	g.AddEdge(graph.NewEdge[int](1, 7, 0.19))
 	g.AddEdge(graph.NewEdge[int](0, 2, 0.26))
-	g.AddEdge(graph.NewEdge[int](2, 3, 0.17))
-	g.AddEdge(graph.NewEdge[int](5, 7, 0.28))
-	g.AddEdge(graph.NewEdge[int](4, 5, 0.35))
+	g.AddEdge(graph.NewEdge[int](1, 2, 0.36))
+	g.AddEdge(graph.NewEdge[int](1, 3, 0.29))
+	g.AddEdge(graph.NewEdge[int](2, 7, 0.34))
 	g.AddEdge(graph.NewEdge[int](6, 2, 0.40))
+	g.AddEdge(graph.NewEdge[int](3, 6, 0.52))
+	g.AddEdge(graph.NewEdge[int](6, 0, 0.58))
+	g.AddEdge(graph.NewEdge[int](6, 4, 0.93))
 
 	fmt.Println(g.V())
 	fmt.Println(g.E())
-	fmt.Println(g)
 	fmt.Println(g.Edges())
 
-	// c := diprocessor.NewStronglyConnectorDiGraphProcessor[int](g)
-	// fmt.Println(c.Count())
-	// fmt.Println(c.IsConnected(0, 1), "should be false")
+	fmt.Println("Kruskal")
+	kruskalMSTEdges := processor.MSTWithKruskal[int](g)
+	kruskalMSTEdgesTotalWeight := 0.0
+	for _, edge := range kruskalMSTEdges {
+		kruskalMSTEdgesTotalWeight += edge.Weight()
+	}
+	fmt.Println(kruskalMSTEdges)
+	fmt.Println(kruskalMSTEdgesTotalWeight)
+	fmt.Println("Prim")
+	primMSTEdges := processor.MSTWithKruskal[int](g)
+	primMSTEdgesTotalWeight := 0.0
+	for _, edge := range primMSTEdges {
+		primMSTEdgesTotalWeight += edge.Weight()
+	}
+	fmt.Println(primMSTEdges)
+	fmt.Println(primMSTEdgesTotalWeight)
 }
 
 func stronglyConnectedCheck() {
@@ -175,4 +218,29 @@ func traversalCheck() {
 	fmt.Println(processor.Bfs[int](*g))
 	fmt.Println(processor.DfsFromSource[int](*g, 0))
 	fmt.Println(processor.BfsFromSource[int](*g, 0))
+}
+
+func cycleCheck() {
+	g := graph.NewGraph[int]()
+	g.AddEdge(0, 1)
+	g.AddEdge(1, 2)
+	g.AddEdge(2, 3)
+	g.AddEdge(3, 4)
+	g.AddEdge(5, 6)
+	g.AddEdge(6, 7)
+	g.AddEdge(7, 8)
+	g.AddEdge(4, 8)
+
+	fmt.Println(g.V())
+	fmt.Println(g.E())
+	fmt.Println(g)
+
+	fmt.Println(processor.Dfs[int](*g))
+	fmt.Println(processor.Bfs[int](*g))
+	fmt.Println(processor.DfsFromSource[int](*g, 0))
+	fmt.Println(processor.BfsFromSource[int](*g, 0))
+
+	fmt.Println(processor.DetectCyclesInEntireGraph[int](*g))
+	g.AddEdge(3, 5)
+	fmt.Println(processor.DetectCyclesInEntireGraph[int](*g))
 }

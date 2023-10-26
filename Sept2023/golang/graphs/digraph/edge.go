@@ -1,4 +1,4 @@
-package graph
+package digraph
 
 type Edge[T comparable] struct {
 	v      T
@@ -14,15 +14,12 @@ func NewEdge[T comparable](v, w T, weight float64) Edge[T] {
 	}
 }
 
-func (e *Edge[T]) Either() T {
+func (e *Edge[T]) Source() T {
 	return e.v
 }
 
-func (e *Edge[T]) Other(v T) T {
-	if e.v == v {
-		return e.w
-	}
-	return e.v
+func (e *Edge[T]) Target() T {
+	return e.w
 }
 
 func (e *Edge[T]) Weight() float64 {
