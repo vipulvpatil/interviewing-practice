@@ -10,7 +10,30 @@ import (
 )
 
 func main() {
-	findShortestPath()
+	maxFlowMinCutCheck()
+}
+
+func maxFlowMinCutCheck() {
+	g := digraph.NewFlowGraph[int]()
+	g.AddFlowEdge(0, 1, 10)
+	g.AddFlowEdge(0, 2, 5)
+	g.AddFlowEdge(0, 3, 15)
+	g.AddFlowEdge(1, 2, 4)
+	g.AddFlowEdge(2, 3, 4)
+	g.AddFlowEdge(3, 6, 16)
+	g.AddFlowEdge(1, 4, 9)
+	g.AddFlowEdge(1, 5, 15)
+	g.AddFlowEdge(2, 5, 8)
+	g.AddFlowEdge(4, 5, 15)
+	g.AddFlowEdge(4, 7, 10)
+	g.AddFlowEdge(5, 7, 10)
+	g.AddFlowEdge(5, 6, 15)
+	g.AddFlowEdge(6, 2, 6)
+	g.AddFlowEdge(6, 7, 10)
+
+	m := diprocessor.NewMaxFlowMinCut[int](*g, 0, 7)
+	fmt.Println(m.MaxFlow())
+	fmt.Println(m.MinCut())
 }
 
 func findShortestPath() {
