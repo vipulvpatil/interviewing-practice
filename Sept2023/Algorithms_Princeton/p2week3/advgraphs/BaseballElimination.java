@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Objects;
 
 import edu.princeton.cs.algs4.FlowEdge;
 import edu.princeton.cs.algs4.FlowNetwork;
@@ -54,48 +53,47 @@ public class BaseballElimination {
 
   // number of wins for given team
   public int wins(String team) {
-    Integer teamI = teamIndex.get(team);
-    if (teamI == null) {
+    if (!teamIndex.containsKey(team)) {
       throw new IllegalArgumentException();
     }
+    int teamI = teamIndex.get(team);
     return wins[teamI];
   }
 
   // number of losses for given team
   public int losses(String team) {
-    Integer teamI = teamIndex.get(team);
-    if (teamI == null) {
+    if (!teamIndex.containsKey(team)) {
       throw new IllegalArgumentException();
     }
+    int teamI = teamIndex.get(team);
     return losses[teamI];
   }
 
   // number of remaining games for given team
   public int remaining(String team) {
-    Integer teamI = teamIndex.get(team);
-    if (teamI == null) {
+    if (!teamIndex.containsKey(team)) {
       throw new IllegalArgumentException();
     }
+    int teamI = teamIndex.get(team);
     return remaining[teamI];
   }
 
   // number of remaining games between team1 and team2
   public int against(String team1, String team2) {
-    Integer teamI = teamIndex.get(team1);
-    if (teamI == null) {
+    if (!teamIndex.containsKey(team1)) {
       throw new IllegalArgumentException();
     }
-    Integer teamJ = teamIndex.get(team2);
-    if (teamJ == null) {
+    int teamI = teamIndex.get(team1);
+    if (!teamIndex.containsKey(team2)) {
       throw new IllegalArgumentException();
     }
+    int teamJ = teamIndex.get(team2);
     return games[teamI][teamJ];
   }
 
   // is given team eliminated?
   public boolean isEliminated(String team) {
-    Integer teamI = teamIndex.get(team);
-    if (teamI == null) {
+    if (!teamIndex.containsKey(team)) {
       throw new IllegalArgumentException();
     }
     return eliminators.get(team) != null;
@@ -103,8 +101,7 @@ public class BaseballElimination {
 
   // subset R of teams that eliminates given team; null if not eliminated
   public Iterable<String> certificateOfElimination(String team) {
-    Integer teamI = teamIndex.get(team);
-    if (teamI == null) {
+    if (!teamIndex.containsKey(team)) {
       throw new IllegalArgumentException();
     }
     String[] cert = eliminators.get(team);
@@ -127,23 +124,24 @@ public class BaseballElimination {
       String line = in.readLine();
       line = line.trim();
       String[] tokens = line.split("\\s+");
-      String teamName = tokens[0];
+      int tokenIndex = 0;
+      String teamName = tokens[tokenIndex++];
       teams[i] = teamName;
       teamIndex.put(teamName, i);
-      wins[i] = Integer.parseInt(tokens[1]);
-      losses[i] = Integer.parseInt(tokens[2]);
-      remaining[i] = Integer.parseInt(tokens[3]);
+      wins[i] = Integer.parseInt(tokens[tokenIndex++]);
+      losses[i] = Integer.parseInt(tokens[tokenIndex++]);
+      remaining[i] = Integer.parseInt(tokens[tokenIndex++]);
       for (int j = 0; j < noOfTeams; j++) {
-        games[i][j] = Integer.parseInt(tokens[j + 4]);
+        games[i][j] = Integer.parseInt(tokens[tokenIndex++]);
       }
     }
   }
 
   private String[] findEliminatingTeams(String team) {
-    Integer teamI = teamIndex.get(team);
-    if (teamI == null) {
+    if (!teamIndex.containsKey(team)) {
       throw new IllegalArgumentException();
     }
+    int teamI = teamIndex.get(team);
     int teamVerticesCount = teams.length - 1;
     int gameVerticesCount = (teamVerticesCount * (teamVerticesCount - 1)) / 2;
     GameVertexMap gameVertex = new GameVertexMap(teams.length, teamI);
@@ -155,8 +153,8 @@ public class BaseballElimination {
           if (j != teamI) {
             int v = gameVertex.indexForGame(i, j);
             network.addEdge(new FlowEdge(0, v, games[i][j]));
-            network.addEdge(new FlowEdge(v, teamVertex.indexForTeam(i), Double.MAX_VALUE));
-            network.addEdge(new FlowEdge(v, teamVertex.indexForTeam(j), Double.MAX_VALUE));
+            network.addEdge(new FlowEdge(v, teamVertex.indexForTeam(i), Double.POSITIVE_INFINITY));
+            network.addEdge(new FlowEdge(v, teamVertex.indexForTeam(j), Double.POSITIVE_INFINITY));
           }
         }
       }
@@ -203,11 +201,10 @@ public class BaseballElimination {
 
     public int indexForGame(int i, int j) {
       int key = i * teamsLength + j;
-      Integer result = gameVertex.get(key);
-      if (result == null) {
+      if (!gameVertex.containsKey(key)) {
         throw new IllegalArgumentException();
       }
-      return result;
+      return gameVertex.get(key);
     }
   }
 
@@ -226,11 +223,10 @@ public class BaseballElimination {
     }
 
     public int indexForTeam(int i) {
-      Integer result = teamVertex.get(i);
-      if (result == null) {
+      if (!teamVertex.containsKey(i)) {
         throw new IllegalArgumentException();
       }
-      return result;
+      return teamVertex.get(i);
     }
   }
 
