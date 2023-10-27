@@ -35,7 +35,9 @@ public class BaseballElimination {
 
       if (eliminators.get(team) == null) {
         String[] eliminatingTeams = findEliminatingTeams(team);
-        eliminators.put(team, eliminatingTeams);
+        if (eliminatingTeams.length > 0) {
+          eliminators.put(team, eliminatingTeams);
+        }
       }
     }
   }
@@ -122,7 +124,8 @@ public class BaseballElimination {
     games = new int[noOfTeams][noOfTeams];
     eliminators = new HashMap<>();
     for (int i = 0; i < noOfTeams; i++) {
-      String line = in.readLine().trim();
+      String line = in.readLine();
+      line = line.trim();
       String[] tokens = line.split("\\s+");
       String teamName = tokens[0];
       teams[i] = teamName;
@@ -175,16 +178,13 @@ public class BaseballElimination {
         }
       }
     }
-    if (result.size() == 0) {
-      return null;
-    }
 
-    return Objects.requireNonNull(result.toArray(new String[0]));
+    return result.toArray(new String[0]);
   }
 
   private class GameVertexMap {
-    private HashMap<Integer, Integer> gameVertex = new HashMap<>();
-    private int teamsLength;
+    private final HashMap<Integer, Integer> gameVertex = new HashMap<>();
+    private final int teamsLength;
 
     public GameVertexMap(int teamsLength, int teamI) {
       this.teamsLength = teamsLength;
@@ -212,7 +212,7 @@ public class BaseballElimination {
   }
 
   private class TeamVertexMap {
-    private HashMap<Integer, Integer> teamVertex = new HashMap<>();
+    private final HashMap<Integer, Integer> teamVertex = new HashMap<>();
 
     public TeamVertexMap(int startIndex, int teamI, int teamsLength) {
       int index = 0;
@@ -247,6 +247,6 @@ public class BaseballElimination {
         StdOut.println(team + " is not eliminated");
       }
     }
-   
- }
+
+  }
 }
