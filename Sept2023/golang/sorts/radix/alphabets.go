@@ -1,6 +1,8 @@
 package radix
 
 import (
+	"unicode/utf8"
+
 	"golang.org/x/exp/slices"
 )
 
@@ -82,6 +84,13 @@ func (a alphabet) Alphabet() alphabet {
 
 func (a alphabet) Rune() rune {
 	return rune(a)
+}
+
+func (a alphabet) String() string {
+	len := utf8.RuneLen(a.Rune())
+	b := make([]byte, len)
+	utf8.EncodeRune(b, a.Rune())
+	return string(b)
 }
 
 var lexicographicallySortedAlphabetsMap map[alphabet]int

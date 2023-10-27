@@ -26,7 +26,12 @@ func LSDSort(arr []string) {
 func Sort(arr []string, sortKeyIndex int, start int, end int) {
 	// Radix sort can only be sorted on a closed set of characters.
 
-	// TODO: add input validation
+	if len(arr) == 0 {
+		return
+	}
+	if start >= end {
+		return
+	}
 
 	arrayOfAlphabetArray := convertToArrayOfAlphabetArray(arr[start : end+1])
 
