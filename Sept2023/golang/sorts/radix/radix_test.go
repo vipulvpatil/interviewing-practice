@@ -1,7 +1,6 @@
 package radix
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,15 +8,16 @@ import (
 
 func Test_BaseRadixSort(t *testing.T) {
 	arr := []string{"A", "Z", "a", "c", "3", "", "g", "H", "T", "t", "5", "å"}
+	expected := []string{"", "å", "3", "5", "A", "H", "T", "Z", "a", "c", "g", "t"}
 	Sort(arr, 0, 0, len(arr)-1)
-	fmt.Println(arr)
-	assert.Equal(t, 12, len(arr))
-	assert.Fail(t, "testing")
+	assert.Equal(t, len(expected), len(arr))
+	assert.Equal(t, expected, arr)
 }
 
-// func Test_LSDRadixSort(t *testing.T) {
-// 	arr := []string{"A", "Z", "a", "c", "3", "g", "H", "T", "t", "5"}
-// 	Sort(arr, 0, 0, len(arr)-1)
-// 	fmt.Println(arr)
-// 	assert.Fail(t, "testing")
-// }
+func Test_LSDRadixSort(t *testing.T) {
+	arr := []string{"A", "Z", "bat", "cat", "cataract", "3", "", "g", "bad", "H", "T", "t", "5", "cast", "å"}
+	expected := []string{"", "å", "3", "5", "A", "H", "T", "Z", "bad", "bat", "cast", "cat", "cataract", "g", "t"}
+	LSDSort(arr)
+	assert.Equal(t, len(expected), len(arr))
+	assert.Equal(t, expected, arr)
+}

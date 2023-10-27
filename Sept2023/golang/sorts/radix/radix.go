@@ -1,22 +1,39 @@
 package radix
 
-import "unicode/utf8"
+import (
+	"unicode/utf8"
+)
 
-// func LSDSort(arr []string) {
-
-// 	for i := 0; i <
-// }
+func LSDSort(arr []string) {
+	if len(arr) == 0 {
+		return
+	}
+	maxLength := 0
+	for _, s := range arr {
+		len := utf8.RuneCountInString(s)
+		if len > maxLength {
+			maxLength = len
+		}
+	}
+	if maxLength == 0 {
+		return
+	}
+	for i := maxLength - 1; i >= 0; i-- {
+		Sort(arr, i, 0, len(arr)-1)
+	}
+}
 
 func Sort(arr []string, sortKeyIndex int, start int, end int) {
 	// Radix sort can only be sorted on a closed set of characters.
-	// So verify that while counting.
+
+	// TODO: add input validation
 
 	arrayOfAlphabetArray := convertToArrayOfAlphabetArray(arr[start : end+1])
 
 	alphabetsMap := LexicographicallySortedAlphabetsMap()
 	count := make([]int, len(alphabetsMap)+2)
 	for _, alphabetArray := range arrayOfAlphabetArray {
-		index := 0
+		index := 1
 		if sortKeyIndex < len(alphabetArray) {
 			key := alphabetArray[sortKeyIndex].Alphabet()
 			if k, ok := alphabetsMap[key]; ok {
@@ -33,7 +50,6 @@ func Sort(arr []string, sortKeyIndex int, start int, end int) {
 	}
 
 	auxArray := make([][]Alphabet, len(arrayOfAlphabetArray))
-
 	for _, alphabetArray := range arrayOfAlphabetArray {
 		index := 0
 		if sortKeyIndex < len(alphabetArray) {

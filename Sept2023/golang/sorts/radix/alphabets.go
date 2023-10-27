@@ -1,6 +1,8 @@
 package radix
 
-import "golang.org/x/exp/slices"
+import (
+	"golang.org/x/exp/slices"
+)
 
 type alphabet rune
 
