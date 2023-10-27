@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 import edu.princeton.cs.algs4.FlowEdge;
 import edu.princeton.cs.algs4.FlowNetwork;
@@ -104,7 +105,11 @@ public class BaseballElimination {
     if (teamI == null) {
       throw new IllegalArgumentException();
     }
-    return Arrays.asList(eliminators.get(team));
+    String[] cert = eliminators.get(team);
+    if (cert == null) {
+      return null;
+    }
+    return Arrays.asList(cert);
   }
 
   private void initStandings(In in) {
@@ -173,7 +178,8 @@ public class BaseballElimination {
     if (result.size() == 0) {
       return null;
     }
-    return result.toArray(new String[0]);
+
+    return Objects.requireNonNull(result.toArray(new String[0]));
   }
 
   private class GameVertexMap {
@@ -241,5 +247,6 @@ public class BaseballElimination {
         StdOut.println(team + " is not eliminated");
       }
     }
-  }
+   
+ }
 }
