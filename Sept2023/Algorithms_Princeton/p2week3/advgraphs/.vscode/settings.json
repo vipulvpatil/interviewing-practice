@@ -1,0 +1,6 @@
+{
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar",
+    "/Users/vipulvpatil/Desktop/Labs/interviewing-practice/Sept2023/Algorithms_Princeton/jars/algs4.jar"
+  ]
+}

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+zip baseball.zip BaseballElimination.java
