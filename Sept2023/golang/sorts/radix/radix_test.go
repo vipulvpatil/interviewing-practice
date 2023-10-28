@@ -30,10 +30,10 @@ func Test_MSDRadixSort(t *testing.T) {
 	assert.Equal(t, expected, arr)
 }
 
-// func Test_ThreeWayQuickSort(t *testing.T) {
-// 	arr := []string{"Alpha", "Zeta", "bat", "cat", "cataract", "3", "", "g", "bad", "Has", "Test", "åƒ∑5", "t", "0500", "cast", "åƒ∑"}
-// 	expected := []string{"", "åƒ∑", "åƒ∑5", "0500", "3", "Alpha", "Has", "Test", "Zeta", "bad", "bat", "cast", "cat", "cataract", "g", "t"}
-// 	ThreeWayQuickSort(arr)
-// 	assert.Equal(t, len(expected), len(arr))
-// 	assert.Equal(t, expected, arr)
-// }
+func Test_ThreeWayQuickSort(t *testing.T) {
+	arr := []string{"Alpha", "Zeta", "bat", "cat", "cataract", "3", "", "g", "bad", "Has", "Test", "åƒ∑5", "t", "0500", "cast", "åƒ∑"}
+	expected := []string{"0500", "3", "Alpha", "Has", "Test", "Zeta", "bad", "bat", "cast", "cat", "cataract", "g", "t", "åƒ∑", "åƒ∑5", ""}
+	ThreeWayQuickSort(arr)
+	assert.Equal(t, len(expected), len(arr))
+	assert.Equal(t, expected, arr)
+}
