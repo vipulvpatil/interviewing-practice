@@ -6,7 +6,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public class BoggleSolver {
-  Trie trie;
+  private Trie trie;
 
   // Initializes the data structure using the given array of strings as the
   // dictionary.
@@ -20,24 +20,13 @@ public class BoggleSolver {
   public Iterable<String> getAllValidWords(BoggleBoard board) {
     BoggleBoardTrie bt = new BoggleBoardTrie(board);
     HashMap<String, Integer> collectedWords = new HashMap<>();
-    boolean debug = false;
-    if (debug) {
-      int i = 2;
-      int j = 1;
-      BGTNode bNode = bt.nodes[i][j];
-      bNode.visit();
-      HashMap<String, Integer> newWords = this.trie.collectWords(this.trie.root, bt, bNode);
-      collectedWords.putAll(newWords);
-      bNode.unvisit();
-    } else {
-      for (int i = 0; i < board.rows(); i++) {
-        for (int j = 0; j < board.cols(); j++) {
-          BGTNode bNode = bt.nodes[i][j];
-          bNode.visit();
-          HashMap<String, Integer> newWords = this.trie.collectWords(this.trie.root, bt, bNode);
-          collectedWords.putAll(newWords);
-          bNode.unvisit();
-        }
+    for (int i = 0; i < board.rows(); i++) {
+      for (int j = 0; j < board.cols(); j++) {
+        BGTNode bNode = bt.nodes[i][j];
+        bNode.visit();
+        HashMap<String, Integer> newWords = this.trie.collectWords(this.trie.root, bt, bNode);
+        collectedWords.putAll(newWords);
+        bNode.unvisit();
       }
     }
     return collectedWords.keySet();
