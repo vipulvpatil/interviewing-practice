@@ -6,7 +6,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public class BoggleSolver {
-  private Trie trie;
+  private final Trie trie;
 
   // Initializes the data structure using the given array of strings as the
   // dictionary.
@@ -52,6 +52,26 @@ public class BoggleSolver {
     StdOut.println("Score = " + score);
   }
 
+  private static int intForChar(char c) {
+    return c - 65;
+  }
+
+  private static int scoreForCount(int count) {
+    int score = 0;
+    if (count >= 8) {
+      score = 11;
+    } else if (count >= 7) {
+      score = 5;
+    } else if (count >= 6) {
+      score = 3;
+    } else if (count >= 5) {
+      score = 2;
+    } else if (count >= 3) {
+      score = 1;
+    }
+    return score;
+  }
+
   private class Node {
     private Node[] children;
     private String word;
@@ -71,11 +91,7 @@ public class BoggleSolver {
       }
     }
 
-    private HashMap<String, Integer> findWords(String s) {
-      return findWords(root, s.toUpperCase());
-    }
-
-    private int findWordScore(String s) {
+    public int findWordScore(String s) {
       Node word = findWord(root, s.toUpperCase());
       if (word != null) {
         return word.score;
@@ -96,27 +112,6 @@ public class BoggleSolver {
       int i = intForChar(c);
       n.children[i] = add(n.children[i], s.substring(1), path + c, count + 1);
       return n;
-    }
-
-    private HashMap<String, Integer> findWords(Node n, String s) {
-      HashMap<String, Integer> newWordFound = new HashMap<>();
-      if (n.score > 0) {
-        newWordFound.put(n.word, n.score);
-      }
-      if (s.length() == 0) {
-        return newWordFound;
-      }
-      char c = s.charAt(0);
-      int i = intForChar(c);
-      Node nextNode = n.children[i];
-      if (nextNode == null) {
-        return newWordFound;
-      }
-      HashMap<String, Integer> furtherWords = findWords(nextNode, s.substring(1));
-      if (n.score > 0) {
-        furtherWords.put(n.word, n.score);
-      }
-      return furtherWords;
     }
 
     private Node findWord(Node n, String s) {
@@ -155,33 +150,13 @@ public class BoggleSolver {
       }
       return furtherWords;
     }
-
-    private final int intForChar(char c) {
-      return c - 65;
-    }
-
-    private final int scoreForCount(int count) {
-      int score = 0;
-      if (count >= 8) {
-        score = 11;
-      } else if (count >= 7) {
-        score = 5;
-      } else if (count >= 6) {
-        score = 3;
-      } else if (count >= 5) {
-        score = 2;
-      } else if (count >= 3) {
-        score = 1;
-      }
-      return score;
-    }
   }
 
   private class BGTNode {
-    private char character;
+    private final char character;
     private boolean visited;
-    private int i;
-    private int j;
+    private final int i;
+    private final int j;
 
     public BGTNode(int i, int j, char character) {
       this.i = i;
@@ -201,8 +176,8 @@ public class BoggleSolver {
 
   private class BoggleBoardTrie {
     public BGTNode[][] nodes;
-    private int rows;
-    private int cols;
+    private final int rows;
+    private final int cols;
 
     public BoggleBoardTrie(BoggleBoard board) {
       rows = board.rows();
@@ -215,7 +190,7 @@ public class BoggleSolver {
       }
     }
 
-    private BGTNode[] unvisitedNeighbors(BGTNode b) {
+    public BGTNode[] unvisitedNeighbors(BGTNode b) {
       List<BGTNode> list = new ArrayList<>();
       for (int i = b.i - 1; i <= b.i + 1; i++) {
         for (int j = b.j - 1; j <= b.j + 1; j++) {
