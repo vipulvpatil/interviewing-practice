@@ -33,6 +33,8 @@ func (t *Trie) Get(key string) string {
 }
 
 func (t *Trie) Delete(key string) {
+	keyArr := []rune(key)
+	t.root = t.root.delete(keyArr)
 }
 
 func (n *Node) put(key []rune, value string) *Node {
@@ -60,4 +62,17 @@ func (n *Node) get(key []rune) *Node {
 		return nil
 	}
 	return nextNode.get(key[1:])
+}
+
+func (n *Node) delete(key []rune) *Node {
+	if n == nil {
+		return nil
+	}
+	if len(key) == 0 {
+		n.value = ""
+		n.hasValue = false
+	} else {
+		n.children[key[0]] = n.children[key[0]].delete(key[1:])
+	}
+	return n
 }
