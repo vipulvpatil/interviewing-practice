@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
@@ -12,39 +14,52 @@ public class BoggleSolver {
   // letters A through Z.)
   public BoggleSolver(String[] dictionary) {
     this.trie = new Trie(dictionary);
-    StdOut.println(this.trie.findWords("friend"));
-    StdOut.println(this.trie.findWords("friendly"));
-    StdOut.println(this.trie.findWords("fry"));
-    StdOut.println(this.trie.findWords("fraud"));
-    StdOut.println(this.trie.findWords("defraud"));
   }
 
   // Returns the set of all valid words in the given Boggle board, as an Iterable.
   public Iterable<String> getAllValidWords(BoggleBoard board) {
-
-    return null;
+    BoggleBoardTrie bt = new BoggleBoardTrie(board);
+    HashMap<String, Integer> collectedWords = new HashMap<>();
+    boolean debug = false;
+    if (debug) {
+      int i = 2;
+      int j = 1;
+      BGTNode bNode = bt.nodes[i][j];
+      bNode.visit();
+      HashMap<String, Integer> newWords = this.trie.collectWords(this.trie.root, bt, bNode);
+      collectedWords.putAll(newWords);
+      bNode.unvisit();
+    } else {
+      for (int i = 0; i < board.rows(); i++) {
+        for (int j = 0; j < board.cols(); j++) {
+          BGTNode bNode = bt.nodes[i][j];
+          bNode.visit();
+          HashMap<String, Integer> newWords = this.trie.collectWords(this.trie.root, bt, bNode);
+          collectedWords.putAll(newWords);
+          bNode.unvisit();
+        }
+      }
+    }
+    return collectedWords.keySet();
   }
 
   // Returns the score of the given word if it is in the dictionary, zero
   // otherwise.
   // (You can assume the word contains only the uppercase letters A through Z.)
   public int scoreOf(String word) {
-    return 0;
+    return this.trie.findWordScore(word);
   }
 
   public static void main(String[] args) {
-    // In in = new In(args[0]);
-    // String[] dictionary = in.readAllStrings();
-    String[] dictionary = new String[] {
-        "friend", "friendly", "fry", "deep", "friendship",
-    };
+    In in = new In(args[0]);
+    String[] dictionary = in.readAllStrings();
     BoggleSolver solver = new BoggleSolver(dictionary);
-    // BoggleBoard board = new BoggleBoard(args[1]);
+    BoggleBoard board = new BoggleBoard(args[1]);
     int score = 0;
-    // for (String word : solver.getAllValidWords(board)) {
-    // StdOut.println(word);
-    // score += solver.scoreOf(word);
-    // }
+    for (String word : solver.getAllValidWords(board)) {
+      StdOut.println(word);
+      score += solver.scoreOf(word);
+    }
     StdOut.println("Score = " + score);
   }
 
@@ -71,13 +86,21 @@ public class BoggleSolver {
       return findWords(root, s.toUpperCase());
     }
 
+    private int findWordScore(String s) {
+      Node word = findWord(root, s.toUpperCase());
+      if (word != null) {
+        return word.score;
+      }
+      return 0;
+    }
+
     private Node add(Node n, String s, String path, int count) {
       if (n == null) {
         n = new Node();
       }
       if (s.length() == 0) {
         n.word = path;
-        n.score = scoreForCount(count + 1);
+        n.score = scoreForCount(count);
         return n;
       }
       char c = s.charAt(0);
@@ -107,6 +130,43 @@ public class BoggleSolver {
       return furtherWords;
     }
 
+    private Node findWord(Node n, String s) {
+      if (s.length() == 0) {
+        return n;
+      }
+      char c = s.charAt(0);
+      int i = intForChar(c);
+      Node nextNode = n.children[i];
+      if (nextNode == null) {
+        return null;
+      }
+      return findWord(nextNode, s.substring(1));
+    }
+
+    private HashMap<String, Integer> collectWords(Node n, BoggleBoardTrie t, BGTNode b) {
+      int i = intForChar(b.character);
+      Node nextNode = n.children[i];
+      if (b.character == "Q".charAt(0)) {
+        if (nextNode != null) {
+          nextNode = nextNode.children[intForChar("U".charAt(0))];
+        }
+      }
+      HashMap<String, Integer> furtherWords = new HashMap<String, Integer>();
+      if (nextNode != null) {
+        BGTNode[] nextBGTNodes = t.unvisitedNeighbors(b);
+        for (int x = 0; x < nextBGTNodes.length; x++) {
+          BGTNode nextBGTNode = nextBGTNodes[x];
+          nextBGTNode.visit();
+          furtherWords.putAll(collectWords(nextNode, t, nextBGTNode));
+          nextBGTNode.unvisit();
+        }
+        if (nextNode.score > 0) {
+          furtherWords.put(nextNode.word, nextNode.score);
+        }
+      }
+      return furtherWords;
+    }
+
     private final int intForChar(char c) {
       return c - 65;
     }
@@ -124,8 +184,61 @@ public class BoggleSolver {
       } else if (count >= 3) {
         score = 1;
       }
-
       return score;
+    }
+  }
+
+  private class BGTNode {
+    private char character;
+    private boolean visited;
+    private int i;
+    private int j;
+
+    public BGTNode(int i, int j, char character) {
+      this.i = i;
+      this.j = j;
+      this.visited = false;
+      this.character = character;
+    }
+
+    public void visit() {
+      visited = true;
+    }
+
+    public void unvisit() {
+      visited = false;
+    }
+  }
+
+  private class BoggleBoardTrie {
+    public BGTNode[][] nodes;
+    private int rows;
+    private int cols;
+
+    public BoggleBoardTrie(BoggleBoard board) {
+      rows = board.rows();
+      cols = board.cols();
+      nodes = new BGTNode[rows][cols];
+      for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+          nodes[i][j] = new BGTNode(i, j, board.getLetter(i, j));
+        }
+      }
+    }
+
+    private BGTNode[] unvisitedNeighbors(BGTNode b) {
+      List<BGTNode> list = new ArrayList<>();
+      for (int i = b.i - 1; i <= b.i + 1; i++) {
+        for (int j = b.j - 1; j <= b.j + 1; j++) {
+          if (i >= 0 && j >= 0 && i < rows && j < cols) {
+            BGTNode neighbor = nodes[i][j];
+            if (!neighbor.visited) {
+              list.add(neighbor);
+            }
+          }
+        }
+      }
+      return list.toArray(new BGTNode[0]);
     }
   }
 
