@@ -1,0 +1,3 @@
+#!/bin/sh
+
+zip boggle.zip BoggleSolver.java
