@@ -37,6 +37,15 @@ func (t *Trie) Delete(key string) {
 	t.root = t.root.delete(keyArr)
 }
 
+func (t *Trie) Keys() []string {
+	runeArrays := t.root.keys([]rune{})
+	str := []string{}
+	for _, runeArr := range runeArrays {
+		str = append(str, string(runeArr))
+	}
+	return str
+}
+
 func (n *Node) put(key []rune, value string) *Node {
 	if n == nil {
 		n = NewNode()
@@ -75,4 +84,21 @@ func (n *Node) delete(key []rune) *Node {
 		n.children[key[0]] = n.children[key[0]].delete(key[1:])
 	}
 	return n
+}
+
+func (n *Node) keys(currentPrefix []rune) []string {
+	if n == nil {
+		return nil
+	}
+	keysSoFar := []string{}
+	if n.hasValue {
+		keysSoFar = append(keysSoFar, string(currentPrefix))
+	}
+	for k, child := range n.children {
+		newPrefix := append(currentPrefix, k)
+		adding := child.keys(newPrefix)
+		keysSoFar = append(keysSoFar, adding...)
+	}
+
+	return keysSoFar
 }

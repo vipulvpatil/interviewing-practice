@@ -39,7 +39,14 @@ func Test_Delete(t *testing.T) {
 }
 
 func Test_Keys(t *testing.T) {
-
+	tr := Trie{}
+	tr.Put("key1", "key1")
+	tr.Put("key2", "key2")
+	tr.Put("key15", "key15")
+	tr.Put("random_key", "random_key")
+	tr.Put("ke", "ke")
+	tr.Put("k", "k")
+	assert.ElementsMatch(t, []string{"random_key", "k", "ke", "key1", "key2", "key15"}, tr.Keys())
 }
 
 func Test_KeysWithPrefix(t *testing.T) {
