@@ -1,4 +1,4 @@
-package search
+package trie
 
 type Node struct {
 	children map[rune]*Node
@@ -38,12 +38,31 @@ func (t *Trie) Delete(key string) {
 }
 
 func (t *Trie) Keys() []string {
-	runeArrays := t.root.keys([]rune{})
-	str := []string{}
-	for _, runeArr := range runeArrays {
-		str = append(str, string(runeArr))
+	return t.root.keys([]rune{})
+}
+
+func (t *Trie) KeysWithPrefix(key string) []string {
+	keyArr := []rune(key)
+	prefixNode := t.root.get(keyArr)
+	if prefixNode != nil {
+		return prefixNode.keys(keyArr)
 	}
-	return str
+	return nil
+}
+
+// key may contain '.' that matches everything.
+func (t *Trie) KeysThatMatch(key string) []string {
+	keyArr := []rune(key)
+	return t.root.keysThatMatch([]rune{}, keyArr)
+}
+
+func (t *Trie) LongestPrefixOf(key string) string {
+	keyArr := []rune(key)
+	node := t.root.longestPrefixOf(keyArr)
+	if node != nil {
+		return node.value
+	}
+	return ""
 }
 
 func (n *Node) put(key []rune, value string) *Node {
@@ -101,4 +120,50 @@ func (n *Node) keys(currentPrefix []rune) []string {
 	}
 
 	return keysSoFar
+}
+
+func (n *Node) keysThatMatch(currentPrefix []rune, key []rune) []string {
+	if len(key) == 0 {
+		if n.hasValue {
+			return []string{string(currentPrefix)}
+		}
+		return nil
+	}
+	keysSoFar := []string{}
+	if key[0] == '.' {
+		for k, child := range n.children {
+			newPrefix := append(currentPrefix, k)
+			adding := child.keysThatMatch(newPrefix, key[1:])
+			keysSoFar = append(keysSoFar, adding...)
+		}
+	} else {
+		nextNode, ok := n.children[key[0]]
+		if !ok {
+			return nil
+		}
+		newPrefix := append(currentPrefix, key[0])
+		adding := nextNode.keysThatMatch(newPrefix, key[1:])
+		keysSoFar = append(keysSoFar, adding...)
+	}
+	return keysSoFar
+}
+
+func (n *Node) longestPrefixOf(key []rune) *Node {
+	var currentLongestPrefix *Node
+	if n.hasValue {
+		currentLongestPrefix = n
+	}
+
+	if len(key) != 0 {
+		nextNode, ok := n.children[key[0]]
+		if !ok {
+			return currentLongestPrefix
+		}
+		nextLongestPrefix := nextNode.longestPrefixOf(key[1:])
+		if nextLongestPrefix != nil {
+			return nextLongestPrefix
+		}
+	}
+
+	return currentLongestPrefix
 }
