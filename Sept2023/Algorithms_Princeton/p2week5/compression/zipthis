@@ -1,0 +1,3 @@
+#!/bin/sh
+
+zip burrows.zip MoveToFront.java BurrowsWheeler.java CircularSuffixArray.java
