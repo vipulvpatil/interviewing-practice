@@ -52,11 +52,11 @@ public class BoggleSolver {
     StdOut.println("Score = " + score);
   }
 
-  private static int intForChar(char c) {
+  public static int intForChar(char c) {
     return c - 65;
   }
 
-  private static int scoreForCount(int count) {
+  public static int scoreForCount(int count) {
     int score = 0;
     if (count >= 8) {
       score = 11;
