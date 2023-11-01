@@ -6,7 +6,6 @@ import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
 import edu.princeton.cs.algs4.MSD;
 import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.StdOut;
 
 public class BurrowsWheeler {
 

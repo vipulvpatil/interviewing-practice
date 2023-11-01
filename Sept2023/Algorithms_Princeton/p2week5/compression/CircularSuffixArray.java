@@ -4,9 +4,9 @@ import edu.princeton.cs.algs4.MSD;
 import edu.princeton.cs.algs4.StdOut;
 
 public class CircularSuffixArray {
-  String original;
-  HashMap<String, Integer> indices;
-  String[] circularSuffixArray;
+  private String original;
+  private HashMap<String, Integer> indices;
+  private String[] circularSuffixArray;
 
   // circular suffix array of s
   public CircularSuffixArray(String s) {
