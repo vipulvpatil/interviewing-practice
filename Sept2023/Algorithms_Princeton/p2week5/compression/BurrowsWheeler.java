@@ -1,13 +1,27 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
-import edu.princeton.cs.algs4.MSD;
 import edu.princeton.cs.algs4.Queue;
 
 public class BurrowsWheeler {
+  private static class IntegerQueue {
+    private final Queue<Integer> queue;
+
+    public IntegerQueue() {
+      queue = new Queue<>();
+    }
+
+    public void enqueue(int n) {
+      queue.enqueue(n);
+    }
+
+    public int dequeue() {
+      return queue.dequeue();
+    }
+
+    public boolean isEmpty() {
+      return queue.isEmpty();
+    }
+  }
 
   // apply Burrows-Wheeler transform,
   // reading from standard input and writing to standard output
@@ -34,37 +48,39 @@ public class BurrowsWheeler {
   // reading from standard input and writing to standard output
   public static void inverseTransform() {
     int first = BinaryStdIn.readInt();
-    List<String> t = new ArrayList<>();
-    HashMap<String, Queue<Integer>> nextMap = new HashMap<>();
-    int length = 0;
-    while (!BinaryStdIn.isEmpty()) {
-      char c = BinaryStdIn.readChar(8);
-      String s = String.valueOf(c);
-      t.add(s);
-      if (!nextMap.containsKey(s)) {
-        nextMap.put(s, new Queue<>());
-      }
-      nextMap.get(s).enqueue(length);
-      length++;
-    }
-    String[] sortedT = t.toArray(new String[length]);
-    MSD.sort(sortedT);
+    String s = BinaryStdIn.readString();
+    char[] chars = s.toCharArray();
+    IntegerQueue[] nextMap = new IntegerQueue[256];
 
-    int[] next = new int[length];
-    for (int i = 0; i < length; i++) {
-      int index = nextMap.get(sortedT[i]).dequeue();
-      next[i] = index;
+    for (int i = 0; i < chars.length; i++) {
+      char c = chars[i];
+      if (nextMap[c] == null) {
+        nextMap[c] = new IntegerQueue();
+      }
+      nextMap[c].enqueue(i);
+    }
+    int count = 0;
+    char[] sortedT = new char[chars.length];
+    int[] next = new int[sortedT.length];
+    for (int i = 0; i < nextMap.length; i++) {
+      char c = (char) i;
+      if (nextMap[c] != null) {
+        while (!nextMap[c].isEmpty()) {
+          next[count] = nextMap[c].dequeue();
+          sortedT[count++] = c;
+        }
+      }
     }
 
     int x = first;
-    int count = 0;
-    StringBuilder sb = new StringBuilder();
-    while (count < length) {
-      sb.append(sortedT[x]);
+    count = 0;
+    chars = new char[sortedT.length];
+    while (count < sortedT.length) {
+      chars[count] = sortedT[x];
       x = next[x];
       count++;
     }
-    BinaryStdOut.write(sb.toString());
+    BinaryStdOut.write(new String(chars));
     BinaryStdOut.close();
   }
 
