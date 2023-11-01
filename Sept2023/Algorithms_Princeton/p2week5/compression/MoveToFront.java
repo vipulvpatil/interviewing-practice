@@ -16,8 +16,8 @@ public class MoveToFront {
       int i = bringToFront(list, input);
       ints.add(i);
     }
-    for (int i = 0; i < ints.size(); i++) {
-      BinaryStdOut.write(ints.get(i), 8);
+    for (int i : ints) {
+      BinaryStdOut.write(i, 8);
     }
     BinaryStdOut.close();
   }
@@ -32,8 +32,8 @@ public class MoveToFront {
       char c = bringToFront(list, input);
       chars.add(String.valueOf(c));
     }
-    for (int i = 0; i < chars.size(); i++) {
-      char c = chars.get(i).charAt(0);
+    for (String s : chars) {
+      char c = s.charAt(0);
       BinaryStdOut.write(c);
     }
     BinaryStdOut.close();

@@ -1,26 +1,51 @@
-import java.util.HashMap;
-
-import edu.princeton.cs.algs4.MSD;
+import java.util.Arrays;
 import edu.princeton.cs.algs4.StdOut;
 
 public class CircularSuffixArray {
-  private String original;
-  private HashMap<String, Integer> indices;
-  private String[] circularSuffixArray;
+  private final String original;
+  private final Suffix[] circularSuffixArray;
+
+  private class Suffix implements Comparable<Suffix> {
+    private final String s;
+    private final int i;
+
+    public Suffix(String s, int i) {
+      this.s = s;
+      this.i = i;
+    }
+
+    public String string() {
+      return s;
+    }
+
+    public int index() {
+      return i;
+    }
+
+    public int compareTo(Suffix other) {
+      return this.s.compareTo(other.s);
+    }
+  }
 
   // circular suffix array of s
   public CircularSuffixArray(String s) {
+    if (s == null) {
+      throw new IllegalArgumentException();
+    }
     original = s;
-    circularSuffixArray = new String[original.length()];
-    circularSuffixArray[0] = s;
-    indices = new HashMap<>();
-    indices.put(circularSuffixArray[0], 0);
+    if (original.length() == 0) {
+      circularSuffixArray = new Suffix[] {};
+      return;
+    }
+    circularSuffixArray = new Suffix[original.length()];
+    circularSuffixArray[0] = new Suffix(s, 0);
     for (int i = 1; i < original.length(); i++) {
-      circularSuffixArray[i] = circularShiftLeft(circularSuffixArray[i - 1]);
-      indices.put(circularSuffixArray[i], i);
+      String prevSuffixString = circularSuffixArray[i - 1].string();
+      String nextSuffixString = circularShiftLeft(prevSuffixString);
+      circularSuffixArray[i] = new Suffix(nextSuffixString, i);
     }
 
-    MSD.sort(circularSuffixArray);
+    Arrays.sort(circularSuffixArray);
   }
 
   // length of s
@@ -30,7 +55,10 @@ public class CircularSuffixArray {
 
   // returns index of ith sorted suffix
   public int index(int i) {
-    return indices.get(circularSuffixArray[i]);
+    if (i >= length()) {
+      throw new IllegalArgumentException();
+    }
+    return circularSuffixArray[i].index();
   }
 
   private String circularShiftLeft(String s) {
@@ -49,7 +77,7 @@ public class CircularSuffixArray {
     if (c.length() != 12) {
       StdOut.printf("length of CircularSuffixArray should be 12 but is %d\n", c.length());
     }
-    int[] expectedIndices = new int[] { 11, 10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2 };
+    int[] expectedIndices = { 11, 10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2 };
 
     for (int i = 0; i < expectedIndices.length; i++) {
       if (c.index(i) != expectedIndices[i]) {
