@@ -14,8 +14,8 @@ public class CircularSuffixArray {
       this.offset = offset;
     }
 
-    private String string() {
-      return s.substring(offset) + s.substring(0, offset);
+    private char charAt(int i) {
+      return s.charAt((offset + i) % s.length());
     }
 
     public int index() {
@@ -23,7 +23,13 @@ public class CircularSuffixArray {
     }
 
     public int compareTo(Suffix other) {
-      return this.string().compareTo(other.string());
+      for (int i = 0; i < s.length(); i++) {
+        int comp = Character.compare(this.charAt(i), other.charAt(i));
+        if (comp != 0) {
+          return comp;
+        }
+      }
+      return 0;
     }
   }
 
