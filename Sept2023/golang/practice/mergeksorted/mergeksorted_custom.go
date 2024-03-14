@@ -2,17 +2,17 @@ package mergeksorted
 
 import "container/heap"
 
-func MergeKLists(lists []*ListNode) *ListNode {
+func MergeKListsCustom(lists []*ListNode) *ListNode {
 	pq := new(minPQ)
 	for _, l := range lists {
 		if l != nil {
-			heap.Push(pq, l)
+			Push(pq, l)
 		}
 	}
 	var result *ListNode
 	var node *ListNode
 	for pq.Len() > 0 {
-		minNode := heap.Pop(pq).(*ListNode)
+		minNode := Pop(pq).(*ListNode)
 		newNode := &ListNode{
 			Val: minNode.Val,
 		}

@@ -17,6 +17,17 @@ func TestMerging(t *testing.T) {
 	})
 }
 
+func TestCustomMerging(t *testing.T) {
+	t.Run("testing merging", func(t *testing.T) {
+		result := MergeKListsCustom(createListOfLinkList([][]int{{1, 4, 5}, {1, 3, 4}, {2, 6}}))
+		assert.Equal(t, []int{1, 1, 2, 3, 4, 4, 5, 6}, createArray(result))
+		result = MergeKListsCustom(createListOfLinkList([][]int{{}}))
+		assert.Equal(t, []int{}, createArray(result))
+		result = MergeKListsCustom(createListOfLinkList([][]int{}))
+		assert.Equal(t, []int{}, createArray(result))
+	})
+}
+
 func createListOfLinkList(arr [][]int) []*ListNode {
 	result := []*ListNode{}
 	for i := range arr {
