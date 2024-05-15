@@ -1,4 +1,4 @@
-package nary
+package problem1
 
 import (
 	"testing"
