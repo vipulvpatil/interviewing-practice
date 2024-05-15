@@ -1,67 +1,162 @@
 package nary
 
-import "testing"
+import (
+	"testing"
 
-tree1 := Node{
-	Value: "A",
-	Children: []*Node{
-		{
-			Value: "B",
-		},
-		{
-			Value: "C",
-		},
-		{
-			Value: "C",
-		},
-		{
-			Value: "D",
-		},
-	},
-}
+	"github.com/stretchr/testify/assert"
+)
 
-tree2 := Node{
-	Value: "A",
-	Children: []*Node{
-		{
-			Value: "B",
-			Children: []*Node{
-				{
-					Value: "C",
-				},
+func TestAreSameTrue(t *testing.T) {
+	tree1 := Node{
+		Value: "A",
+		Children: []*Node{
+			{
+				Value: "B",
+			},
+			{
+				Value: "C",
+			},
+			{
+				Value: "D",
+			},
+			{
+				Value: "E",
+			},
+		},
+	}
+
+	tree2 := Node{
+		Value: "A",
+		Children: []*Node{
+			{
+				Value: "B",
 				Children: []*Node{
 					{
-						Value: "D",
+						Value: "C",
+						Children: []*Node{
+							{
+								Value: "D",
+							},
+						},
 					},
 				},
 			},
+			{
+				Value: "E",
+			},
 		},
-	},
+	}
+
+	tree3 := Node{
+		Value: "A",
+		Children: []*Node{
+			{
+				Value: "B",
+				Children: []*Node{
+					{
+						Value: "C",
+						Children: []*Node{
+							{
+								Value: "D",
+							},
+							{
+								Value: "",
+							},
+							{
+								Value: "",
+							},
+						},
+					},
+				},
+			},
+			{
+				Value: "",
+			},
+			{
+				Value: "E",
+			},
+			{
+				Value: "",
+			},
+		},
+	}
+
+	t.Run("match successes", func(t *testing.T) {
+		result := AreSame(&tree1, &tree2)
+		assert.True(t, result, "represent same string in tree1 and tree2")
+		result = AreSame(&tree1, &tree3)
+		assert.True(t, result, "represent same string in tree1 and tree3")
+	})
 }
 
-func testMatch(t *testing.T) {
-	t.Run("match successes", func(t *testing.T){
-		ch1 := make(chan string)
-		ch2 := make(chan string)
+func TestAreSameFalse(t *testing.T) {
+	tree1 := Node{
+		Value: "A",
+		Children: []*Node{
+			{
+				Value: "B",
+			},
+			{
+				Value: "C",
+			},
+			{
+				Value: "D",
+			},
+			{
+				Value: "E",
+			},
+		},
+	}
 
-		PreOrderNode(tree1, ch1)
-		PreOrderNode(tree2, ch2)
+	tree2 := Node{
+		Value: "A",
+		Children: []*Node{
+			{
+				Value: "B",
+				Children: []*Node{
+					{
+						Value: "D",
+						Children: []*Node{
+							{
+								Value: "C",
+							},
+						},
+					},
+				},
+			},
+			{
+				Value: "E",
+			},
+		},
+	}
 
-		val1, ok1 := <-ch1
-		val2, ok2 := <-ch2
-		for ok1 && ok2 {
-			if val1 != val2 {
-				fmt.Println("match not found")
-			}
-			val1, ok1 = <-ch1
-			val2, ok2 = <-ch2
-		}
-		if ok1 {
-			fmt.Println("match not found")
-		}
-		if ok2 {
-			fmt.Println("match not found")
-		}
-		fmt.Println("match found")
+	tree3 := Node{
+		Value: "A",
+		Children: []*Node{
+			{
+				Value: "B",
+				Children: []*Node{
+					{
+						Value: "C",
+					},
+				},
+			},
+			{
+				Value: "",
+			},
+			{
+				Value: "E",
+			},
+			{
+				Value: "",
+			},
+		},
+	}
+
+	t.Run("match successes", func(t *testing.T) {
+		result := AreSame(&tree1, &tree2)
+		assert.False(t, result, "represent diff string in tree1 and tree2")
+		result = AreSame(&tree1, &tree3)
+		assert.False(t, result, "represent diff string in tree1 and tree3")
 	})
 }
