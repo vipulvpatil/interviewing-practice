@@ -21,7 +21,7 @@ class MarketData {
   constructor() {
     this.buyQueue = new PriorityQueue<Buy>({
       comparator: (a: Buy, b: Buy): number => {
-        if (a.price > b.price) {
+        if (a.price < b.price) {
           return 1
         }
         if (a.price == b.price) {
@@ -34,9 +34,9 @@ class MarketData {
       }
     })
 
-    this.askQueue = new PriorityQueue<Buy>({
-      comparator: (a: Buy, b: Buy): number => {
-        if (a.price < b.price) {
+    this.askQueue = new PriorityQueue<Ask>({
+      comparator: (a: Ask, b: Ask): number => {
+        if (a.price > b.price) {
           return 1
         }
         if (a.price == b.price) {
@@ -50,22 +50,23 @@ class MarketData {
     })
   }
 
-  addMarketEvent = (line: string): void => {
-    const event = line.split(" ")
-    if(event[0] == "BUY") {
+  addMarketEvent = (event: string[]): void => {
+    if(event[0] === "BUY") {
       const buy: Buy = {
         price: parseFloat(event[1]),
         qty: parseFloat(event[2]),
         time: new Date()
       }
-      console.log("adding buy: ", buy)
+      this.addBuy(buy)
     }
-    const ask: Buy = {
-      price: parseFloat(event[1]),
-      qty: parseFloat(event[2]),
-      time: new Date()
+    else if(event[0] === "ASK") {
+      const ask: Ask = {
+        price: parseFloat(event[1]),
+        qty: parseFloat(event[2]),
+        time: new Date()
+      }
+      this.addAsk(ask)
     }
-    console.log("adding ask: ", ask)
   }
 
   addBuy = (buy: Buy): void => {
@@ -87,16 +88,16 @@ class MarketData {
   }
   
   addAsk = (ask: Ask): void => {
-    let smallestBuy = this.getSmallestBuy()
-    while (!!smallestBuy && smallestBuy.price >= ask.price) {
-      if (ask.qty < smallestBuy.qty) {
-        smallestBuy.qty -= ask.qty
+    let largestBuy = this.getLargestBuy()
+    while (!!largestBuy && largestBuy.price >= ask.price) {
+      if (ask.qty < largestBuy.qty) {
+        largestBuy.qty -= ask.qty
         ask.qty = 0
         break;
       } else {
-        ask.qty -= smallestBuy.qty
-        this.popSmallestAsk()
-        smallestBuy = this.getSmallestBuy()
+        ask.qty -= largestBuy.qty
+        this.popLargestBuy()
+        largestBuy = this.getLargestBuy()
       }
     }
     if(ask.qty > 0) {
@@ -112,17 +113,23 @@ class MarketData {
   }
 
   popSmallestAsk = (): Ask | null => {
+    if (this.askQueue.length == 0) {
+      return null
+    }
     return this.askQueue.dequeue()
   }
 
-  getSmallestBuy = (): Buy | null => {
+  getLargestBuy = (): Buy | null => {
     if (this.buyQueue.length == 0) {
       return null
     }
     return this.buyQueue.peek()
   }
 
-  popSmallestBuy = (): Buy | null => {
+  popLargestBuy = (): Buy | null => {
+    if (this.buyQueue.length == 0) {
+      return null
+    }
     return this.buyQueue.dequeue()
   }
 }
@@ -138,8 +145,15 @@ async function main() {
   })
 
   for await (const line of rl) {
-    marketData.addMarketEvent(line)
+    const event = line.split(" ")
+    if(event[0] !== "#") {
+      marketData.addMarketEvent(event)
+      console.log("event", event)
+      console.log("askQueue", marketData.askQueue.length > 0 && marketData.askQueue.peek())
+      console.log("buyQueue", marketData.buyQueue.length > 0 && marketData.buyQueue.peek())
+    }
   }
+
 }
 
 main()
