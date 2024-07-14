@@ -1,0 +1,19 @@
+{
+  "name": "problem1",
+  "version": "1.0.0",
+  "description": "Practicing Typescript",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vipulvpatil/interviewing-practice.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vipulvpatil/interviewing-practice/issues"
+  },
+  "homepage": "https://github.com/vipulvpatil/interviewing-practice#readme"
+}
