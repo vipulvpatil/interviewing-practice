@@ -49,7 +49,25 @@ class MarketData {
       }
     })
   }
-  
+
+  addMarketEvent = (line: string): void => {
+    const event = line.split(" ")
+    if(event[0] == "BUY") {
+      const buy: Buy = {
+        price: parseFloat(event[1]),
+        qty: parseFloat(event[2]),
+        time: new Date()
+      }
+      console.log("adding buy: ", buy)
+    }
+    const ask: Buy = {
+      price: parseFloat(event[1]),
+      qty: parseFloat(event[2]),
+      time: new Date()
+    }
+    console.log("adding ask: ", ask)
+  }
+
   addBuy = (buy: Buy): void => {
     let smallestAsk = this.getSmallestAsk()
     while (!!smallestAsk && smallestAsk.price <= buy.price) {
@@ -120,7 +138,7 @@ async function main() {
   })
 
   for await (const line of rl) {
-    process
+    marketData.addMarketEvent(line)
   }
 }
 
