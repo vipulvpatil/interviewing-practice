@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/vipulvpatil/interviewing-practice/issues"
   },
-  "homepage": "https://github.com/vipulvpatil/interviewing-practice#readme"
+  "homepage": "https://github.com/vipulvpatil/interviewing-practice#readme",
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "ts-node": "^10.9.2",
+    "ts-priority-queue": "^0.1.1",
+    "typescript": "^5.5.3"
+  }
 }
